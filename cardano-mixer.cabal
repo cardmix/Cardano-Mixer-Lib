@@ -1,0 +1,103 @@
+cabal-version:      3.0
+name:               cardano-mixer-common
+version:            0.1.0.0
+
+-- A short (one-line) description of the package.
+-- synopsis:
+
+-- A longer description of the package.
+-- description:
+
+-- A URL where users can report bugs.
+-- bug-reports:
+
+license: Apache-2.0
+license-files: LICENSE
+author:             Vladimir Sinyakov
+maintainer:         devteam@cardmix.io
+
+-- A copyright notice.
+-- copyright:
+-- category:
+-- extra-source-files: CHANGELOG.md
+
+flag defer-plugin-errors
+    description:
+        Defer errors from the plugin, useful for things like Haddock that can't handle it.
+    default: False
+    manual: True
+
+flag testnet
+    description:
+        Builds executables for testnet.
+    default: False
+    manual: True
+
+common lang
+    default-language:   Haskell2010
+    ghc-options:
+      -Wall
+      -Wnoncanonical-monad-instances
+      -Wincomplete-uni-patterns
+      -Wincomplete-record-updates
+      -Wredundant-constraints
+      -fwarn-redundant-constraints
+      -Widentities -rtsopts
+      -- See Plutus Tx readme
+      -fno-specialise -fno-strictness -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas
+    -- if flag(defer-plugin-errors)
+    --   ghc-options:
+        -fplugin-opt PlutusTx.Plugin:defer-errors
+
+library
+    import: lang
+    exposed-modules:
+      Crypto.ZKSNARK
+      Crypto.R1CS
+      Crypto.MerkleTree
+      Crypto.DFT
+      Crypto.BLS12381
+      Crypto.Curve
+      Crypto.Extension
+      Crypto.Polynomial
+      Crypto.Zp
+      Configuration.QAPConfig
+      Utils.Common
+            
+    build-depends:
+      base                          >= 4.9 && < 5,
+      aeson                                  -any,
+      bytestring                             -any,
+      containers                             -any,
+      data-default                           -any,
+      directory                              -any,
+      extra                                  -any,
+      freer-extras                           -any,
+      freer-simple                           -any,
+      flat                                   -any,
+      lens                                   -any,
+      mtl                                    -any,
+      openapi3                               -any,
+      playground-common                      -any,
+      plutus-contract                        -any,
+      plutus-core                            -any,
+      plutus-chain-index                     -any,
+      plutus-chain-index-core                -any,
+      plutus-pab                             -any,
+      plutus-tx-plugin                       -any,
+      plutus-tx                              -any,
+      plutus-ledger                          -any,
+      plutus-ledger-api                      -any,
+      plutus-ledger-constraints              -any,
+      plutus-use-cases                       -any,
+      purescript-bridge                      -any,
+      random                                 -any,
+      req                                    -any,
+      serialise                              -any,
+      text                                   -any,
+      generic-arbitrary                      -any,
+      prettyprinter                          -any,
+      QuickCheck                             -any,
+      uuid                                   -any
+    hs-source-dirs: src
+
