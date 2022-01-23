@@ -53,6 +53,7 @@ library
     import: lang
     exposed-modules:
       Configuration.QAPConfig
+      Crypto
       Crypto.ZKSNARK
       Crypto.R1CS
       Crypto.MerkleTree
@@ -63,6 +64,8 @@ library
       Crypto.Polynomial
       Crypto.Zp
       MixerContractsDefinition
+      MixerState
+      MixerUserData
       Utils.Common            
     build-depends:
       base                          >= 4.9 && < 5,
