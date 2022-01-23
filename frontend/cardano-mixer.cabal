@@ -37,6 +37,7 @@ common lang
 library
     import: lang
     exposed-modules:
+      Configuration.QAPConfig
       Crypto.ZKSNARK
       Crypto.R1CS
       Crypto.MerkleTree
@@ -46,7 +47,7 @@ library
       Crypto.Extension
       Crypto.Polynomial
       Crypto.Zp
-      Configuration.QAPConfig
+      MixerContractsDefinition
       Utils.Common
     other-modules: 
       PlutusTx.Applicative
@@ -86,6 +87,7 @@ library
       ghc-prim                               -any,
       hashable                               -any,
       memory                                 -any,
+      openapi3                               -any,
       random                                 -any,
       req                                    -any,
       serialise                              -any,

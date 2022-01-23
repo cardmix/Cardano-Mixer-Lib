@@ -52,6 +52,7 @@ common lang
 library
     import: lang
     exposed-modules:
+      Configuration.QAPConfig
       Crypto.ZKSNARK
       Crypto.R1CS
       Crypto.MerkleTree
@@ -61,9 +62,8 @@ library
       Crypto.Extension
       Crypto.Polynomial
       Crypto.Zp
-      Configuration.QAPConfig
-      Utils.Common
-            
+      MixerContractsDefinition
+      Utils.Common            
     build-depends:
       base                          >= 4.9 && < 5,
       aeson                                  -any,
