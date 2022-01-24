@@ -52,6 +52,7 @@ common lang
 library
     import: lang
     exposed-modules:
+      ClientLog
       Configuration.QAPConfig
       Crypto
       Crypto.ZKSNARK
