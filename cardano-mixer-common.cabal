@@ -64,6 +64,7 @@ library
       Crypto.Polynomial
       Crypto.Zp
       MixerContractsDefinition
+      MixerProofs
       MixerState
       MixerUserData
       Utils.Common            
