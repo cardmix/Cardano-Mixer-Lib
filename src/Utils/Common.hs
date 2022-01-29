@@ -24,7 +24,7 @@ module Utils.Common where
 
 import           Data.List                         (partition, unzip)
 import           PlutusTx.Builtins                 (subtractInteger)
-import           PlutusTx.Prelude                  hiding ((<>))
+import           PlutusTx.Prelude                  hiding ((<>), partition)
 
 --------------------------------- Lists -------------------------------------
 
