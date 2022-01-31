@@ -27,7 +27,7 @@ import           Codec.Binary.Bech32               (decode, dataPartToBytes)
 import           Data.List                         (partition, unzip)
 import           PlutusTx.Builtins                 (subtractInteger)
 import           Data.Text                         (pack)
-import           PlutusTx.Prelude                  hiding ((<>), partition)
+import           PlutusTx.Prelude                  hiding ((<>))
 import           Prelude                           (String)
 
 --------------------------------- Lists -------------------------------------
