@@ -107,3 +107,9 @@ newtype PartiallyDecodedResponse = PartiallyDecodedResponse { observableState ::
 
 instance FromJSON PartiallyDecodedResponse where
     parseJSON = withObject "PartiallyDecodedResponse" $ \v -> PartiallyDecodedResponse <$> v .: "observableState"
+    
+newtype Wallet = Wallet { getWalletId :: String }
+    deriving stock (Eq, Show, Generic)
+    deriving anyclass (ToJSON, FromJSON)
+
+
