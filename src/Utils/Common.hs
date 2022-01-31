@@ -22,13 +22,9 @@
 
 module Utils.Common where
 
-import           Data.ByteString                   (ByteString)
-import           Codec.Binary.Bech32               (decode, dataPartToBytes)
 import           Data.List                         (partition, unzip)
 import           PlutusTx.Builtins                 (subtractInteger)
-import           Data.Text                         (pack)
-import           PlutusTx.Prelude                  hiding ((<>))
-import           Prelude                           (String)
+import           PlutusTx.Prelude                  hiding ((<>), partition)
 
 --------------------------------- Lists -------------------------------------
 
@@ -77,8 +73,3 @@ numBatches :: Integer -> Integer -> Integer -> Integer
 numBatches sz n1 n2
                 | n1 > n2   = 0
                 | otherwise = 1 + divide (n2-n1) sz
-                
-addressToMaybeByteString :: String -> Maybe ByteString
-addressToMaybeByteString = either (const Nothing) (dataPartToBytes . snd) . decode . pack
-
-         
