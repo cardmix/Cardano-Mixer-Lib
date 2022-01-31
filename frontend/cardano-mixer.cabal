@@ -53,6 +53,7 @@ library
       MixerProofs
       MixerState
       MixerUserData
+      Requests
       Utils.Common
     other-modules: 
       PlutusTx.Applicative
