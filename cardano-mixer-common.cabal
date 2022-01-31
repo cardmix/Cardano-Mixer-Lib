@@ -73,6 +73,7 @@ library
     build-depends:
       base                          >= 4.9 && < 5,
       aeson                                  -any,
+      bech32                                 -any,
       bytestring                             -any,
       containers                             -any,
       data-default                           -any,

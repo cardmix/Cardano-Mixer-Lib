@@ -5,8 +5,3 @@ compiler: ghcjs
 packages: ./.
 
 
-
-
-
-
-
