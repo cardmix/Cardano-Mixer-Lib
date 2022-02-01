@@ -16,10 +16,13 @@
 
 module MixerContractsDefinition where
 
-import           Data.Aeson                          (FromJSON(..), ToJSON(..))
+import           Data.Aeson                          (FromJSON(..), ToJSON(..), FromJSONKey(..), ToJSONKey(..))
 import qualified Data.OpenApi
+import           Data.Map
 import           GHC.Generics                        (Generic)
-import           Prelude                             (Eq, Ord, Show)
+import           Prelude                             
+
+import           Crypto
 
 data MixerContractsDefinition = MintAdminKey | UseMixer | MixerStateQuery | ConnectToPAB | RetrieveTimeLocked
     deriving (Eq, Ord, Show, Generic, FromJSON, ToJSON)
@@ -53,21 +56,27 @@ newtype Wallet = Wallet { getWalletId :: String }
     deriving anyclass (ToJSON, FromJSON)
 
 newtype Value = Value { getValue :: Map CurrencySymbol (Map TokenName Integer) }
-    deriving stock (Generic)
+    deriving stock (Show, Generic)
     deriving anyclass (ToJSON, FromJSON)
 
 newtype CurrencySymbol = CurrencySymbol { unCurrencySymbol :: String }
     deriving stock (Eq, Show, Generic)
-    deriving anyclass (ToJSONKey, FromJSONKey)
+    deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
+
+instance Ord CurrencySymbol where
+    compare a b = compare (read $ "0x" ++ unCurrencySymbol a :: Integer) (read $ "0x" ++ unCurrencySymbol b)
 
 newtype TokenName = TokenName { unTokenName :: String }
     deriving stock (Eq, Show, Generic)
-    deriving anyclass (ToJSON, FromJSON)
+    deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
+
+instance Ord TokenName where
+    compare a b = compare (read $ "0x" ++ unTokenName a :: Integer) (read $ "0x" ++ unTokenName b)
 
 newtype PaymentPubKeyHash = PaymentPubKeyHash { unPaymentPubKeyHash :: PubKeyHash }
     deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
+    deriving anyclass (ToJSON, FromJSON)
 
 newtype PubKeyHash = PubKeyHash { getPubKeyHash :: String }
     deriving stock (Eq, Ord, Show, Generic)
-    deriving anyclass (ToJSON, FromJSON, ToJSONKey, FromJSONKey)
+    deriving anyclass (ToJSON, FromJSON)

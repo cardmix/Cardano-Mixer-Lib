@@ -10,7 +10,7 @@ module Requests (activateRequest, endpointRequest, statusRequest, awaitStatusUpd
 
 import           Control.Concurrent       (threadDelay)
 import           Control.Monad.IO.Class   (MonadIO (..))
-import           Data.Aeson
+import           Data.Aeson               
 import qualified Data.OpenApi             as OpenApi
 import           Data.Proxy               (Proxy (..))
 import           Data.Text                (Text, pack)
@@ -19,13 +19,13 @@ import           GHC.Generics             (Generic)
 import           Network.HTTP.Req
 import           Prelude
 
-import           MixerContractsDefinition
+import           MixerContractsDefinition hiding (Value)
 
 
 ------------------------------- API Requests -------------------------------------
 
 -- Activate a contract for a given wallet
-activateRequest :: (ToJSON a) => Text -> MixerContractsDefinition -> Maybe Wallet -> IO UUID
+activateRequest :: Text -> MixerContractsDefinition -> Maybe Wallet -> IO UUID
 activateRequest ip x w = runReq defaultHttpConfig $ do
     v <- req
         POST
