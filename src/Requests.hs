@@ -25,7 +25,7 @@ import           MixerContractsDefinition
 ------------------------------- API Requests -------------------------------------
 
 -- Activate a contract for a given wallet
-activateRequest :: (ToJSON a) => Text -> MixerContractsDefinition -> Maybe a -> IO UUID
+activateRequest :: (ToJSON a) => Text -> MixerContractsDefinition -> Maybe Wallet -> IO UUID
 activateRequest ip x w = runReq defaultHttpConfig $ do
     v <- req
         POST
@@ -90,10 +90,10 @@ newtype ContractInstanceId = ContractInstanceId { unContractInstanceId :: UUID }
     deriving anyclass (FromJSON, ToJSON, OpenApi.ToSchema)
 
 -- | Data needed to start a new instance of a contract.
-data ContractActivationArgs t a = ContractActivationArgs
+data ContractActivationArgs t = ContractActivationArgs
     {
-        caID     :: t,      -- ^ ID of the contract
-        caWallet :: Maybe a -- ^ Wallet that should be used for this instance, `knownWallet 1` is used in the Nothing case.
+        caID     :: t,           -- ^ ID of the contract
+        caWallet :: Maybe Wallet -- ^ Wallet that should be used for this instance, `knownWallet 1` is used in the Nothing case.
     }
     deriving stock (Eq, Show, Generic)
     deriving anyclass (ToJSON, FromJSON)
@@ -107,9 +107,4 @@ newtype PartiallyDecodedResponse = PartiallyDecodedResponse { observableState ::
 
 instance FromJSON PartiallyDecodedResponse where
     parseJSON = withObject "PartiallyDecodedResponse" $ \v -> PartiallyDecodedResponse <$> v .: "observableState"
-    
-newtype Wallet = Wallet { getWalletId :: String }
-    deriving stock (Eq, Show, Generic)
-    deriving anyclass (ToJSON, FromJSON)
-
 
