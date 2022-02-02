@@ -27,12 +27,9 @@ common lang
                         DeriveGeneric StandaloneDeriving DeriveLift
                         GeneralizedNewtypeDeriving DeriveFunctor DeriveFoldable
                         DeriveTraversable NoImplicitPrelude
-                        -- ImportQualifiedPost
     ghc-options: -Wall -Wnoncanonical-monad-instances -Wunused-packages
                  -Wincomplete-uni-patterns -Wincomplete-record-updates
                  -Wredundant-constraints -Widentities
-                 -- See Plutus Tx readme
-                 -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas
 
 library
     import: lang

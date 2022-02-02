@@ -33,6 +33,12 @@ flag testnet
     default: False
     manual: True
 
+flag frontend
+    description:
+        Builds executables for the frontend.
+    default: False
+    manual: True
+
 common lang
     default-language:   Haskell2010
     ghc-options:
@@ -49,7 +55,86 @@ common lang
     --   ghc-options:
         -fplugin-opt PlutusTx.Plugin:defer-errors
 
+common lang-frontend
+    default-language: Haskell2010
+    default-extensions: ExplicitForAll ScopedTypeVariables
+                        DeriveGeneric StandaloneDeriving DeriveLift
+                        GeneralizedNewtypeDeriving DeriveFunctor DeriveFoldable
+                        DeriveTraversable NoImplicitPrelude
+    ghc-options: -Wall -Wnoncanonical-monad-instances -Wunused-packages
+                 -Wincomplete-uni-patterns -Wincomplete-record-updates
+                 -Wredundant-constraints -Widentities
 library
+  if flag(frontend)
+    import: lang-frontend
+    exposed-modules:
+      ClientLog
+      Configuration.QAPConfig
+      Crypto
+      Crypto.ZKSNARK
+      Crypto.R1CS
+      Crypto.MerkleTree
+      Crypto.DFT
+      Crypto.BLS12381
+      Crypto.Curve
+      Crypto.Extension
+      Crypto.Polynomial
+      Crypto.Zp
+      MixerContractsDefinition
+      MixerProofs
+      MixerState
+      MixerUserData
+      Requests
+      Utils.Common
+    other-modules: 
+      PlutusTx.Applicative
+      PlutusTx.Base
+      PlutusTx.Bool
+      PlutusTx.Builtins
+      PlutusTx.Builtins.Class
+      PlutusTx.Builtins.Internal
+      PlutusTx.Either
+      PlutusTx.Enum
+      PlutusTx.Eq
+      PlutusTx.Foldable
+      PlutusTx.Functor
+      PlutusTx.Integer
+      PlutusTx.Lattice
+      PlutusTx.List
+      PlutusTx.Maybe
+      PlutusTx.Monoid
+      PlutusTx.Numeric
+      PlutusTx.Ord
+      PlutusTx.Prelude
+      PlutusTx.Ratio
+      PlutusTx.Semigroup
+      PlutusTx.Sqrt
+      PlutusTx.These
+      PlutusTx.Traversable
+      PlutusTx.Utils
+    build-depends:
+      base                          >= 4.9 && < 5,
+      aeson                                  -any,
+      bytestring                             -any,
+      containers                             -any,
+      data-default                           -any,
+      deepseq                                -any,
+      directory                              -any,
+      extra                                  -any,
+      ghc-prim                               -any,
+      hashable                               -any,
+      memory                                 -any,
+      openapi3                               -any,
+      random                                 -any,
+      req                                    -any,
+      serialise                              -any,
+      text                                   -any,
+      generic-arbitrary                      -any,
+      prettyprinter                          -any,
+      QuickCheck                             -any,
+      uuid                                   -any
+    hs-source-dirs: src plutus-code
+  else
     import: lang
     exposed-modules:
       ClientLog
