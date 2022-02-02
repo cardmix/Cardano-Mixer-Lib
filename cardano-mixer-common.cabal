@@ -127,7 +127,7 @@ library
       openapi3                               -any,
       random                                 -any,
       req                                    -any,
-      serialise                        == 0.2.3.0,
+      serialise                              -any,
       text                                   -any,
       generic-arbitrary                      -any,
       prettyprinter                          -any,
