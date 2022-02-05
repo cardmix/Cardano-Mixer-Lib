@@ -1,1 +1,1 @@
-module PlutusTx.IsData
+module PlutusTx.IsData where

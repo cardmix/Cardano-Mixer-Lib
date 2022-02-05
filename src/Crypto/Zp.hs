@@ -98,16 +98,6 @@ instance forall p. FiniteField p => Eq (Zp p) where
 ------------------------------- PlutusTx support ----------------------------------
 
 #if PLUTUSTX
-instance ToData (Zp p) where
-    {-# INLINABLE toBuiltinData #-}
-    toBuiltinData (Zp a) = toBuiltinData a
-
-instance FromData (Zp p) where
-    {-# INLINABLE fromBuiltinData #-}
-    fromBuiltinData i = Zp <$> fromBuiltinData i
-
-instance UnsafeFromData (Zp p) where
-    {-# INLINABLE unsafeFromBuiltinData #-}
-    unsafeFromBuiltinData i = Zp $ unsafeFromBuiltinData i
+unstableMakeIsData ''Zp
 #endif
 
