@@ -23,6 +23,7 @@ module Crypto.Curve (CurvePoint(..), EllipticCurve(..), add, dbl, mul, toJ, from
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
+import           PlutusTx.IsData
 import           PlutusTx.Prelude                  
 import           Prelude                           (Show)
 
@@ -171,3 +172,23 @@ fromJ :: EllipticCurve t => (t, t, t) -> CurvePoint t
 fromJ (x, y, z)
           | z == zero = O
           | otherwise = let zz = z * z in CP (x * inv zz) (y * inv (z * zz))
+
+------------------------------- PlutusTx support ----------------------------------
+
+#if PLUTUSTX
+instance (ToData t, Ring t) => ToData (CurvePoint t) where
+    {-# INLINABLE toBuiltinData #-}
+    toBuiltinData O        = toBuiltinData (False, (zero :: t, zero :: t))
+    toBuiltinData (CP x y) = toBuiltinData (True,  (x,    y))
+
+instance FromData t => FromData (CurvePoint t) where
+    {-# INLINABLE fromBuiltinData #-}
+    fromBuiltinData i = case fromBuiltinData i of
+      Just (b, (x, y)) -> if b then Just $ CP x y else Just O
+      Nothing          -> Nothing
+
+instance UnsafeFromData t => UnsafeFromData (CurvePoint t) where
+    {-# INLINABLE unsafeFromBuiltinData #-}
+    unsafeFromBuiltinData i = if b then CP x y else O
+      where (b, (x, y)) = unsafeFromBuiltinData i
+#endif

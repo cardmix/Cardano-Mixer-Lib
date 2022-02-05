@@ -23,6 +23,7 @@ import           Data.Aeson                        (FromJSON(..), ToJSON(..), en
 import           Data.ByteString.Lazy              (writeFile, readFile)
 import           Data.Map                          (Map, toList, findWithDefault)
 import           GHC.Generics                      (Generic)
+import           PlutusTx.IsData
 import           PlutusTx.Prelude                  hiding ((<$>), (<*>), toList, mapM)
 import           Prelude                           (Show (..), IO, (<$>), (<*>), FilePath, init, String, last, putStrLn, print)
 import qualified Prelude                           (mconcat, mapM)
@@ -263,3 +264,9 @@ crsToHaskell crs = concat (["refRedGa = \n", show (refRedGa crs) ++ ",\n",
                             "refRedHd = \n", show (refRedHd crs) ++ ",\n",
                             "refRedGpub = [\n", concatMap (\a -> show a ++ ",\n") (init $ refRedGpub crs),
                             show (last $ refRedGpub crs), "\n]"] :: [String])
+
+------------------------------- PlutusTx support ----------------------------------
+
+#if PLUTUSTX
+unstableMakeIsData ''Proof
+#endif

@@ -99,6 +99,7 @@ library
       PlutusTx.Foldable
       PlutusTx.Functor
       PlutusTx.Integer
+      PlutusTx.IsData
       PlutusTx.Lattice
       PlutusTx.List
       PlutusTx.Maybe
@@ -136,6 +137,8 @@ library
     hs-source-dirs: src plutus-code
   else
     import: lang
+    default-extensions: CPP
+    ghc-options: -DPLUTUSTX
     exposed-modules:
       ClientLog
       Configuration.QAPConfig

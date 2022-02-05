@@ -22,6 +22,7 @@ module Crypto.Polynomial (Polynomial(..), degPoly, leading, unPoly, toPoly, from
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
+import           PlutusTx.IsData
 import           PlutusTx.Prelude                  
 import           Prelude                           (Show)
 
@@ -131,3 +132,19 @@ removeZeroTerms (P p)
                     | p == []        = P []
                     | last p == zero = removeZeroTerms (P $ init p)
                     | otherwise      = P p
+
+------------------------------- PlutusTx support ----------------------------------
+
+#if PLUTUSTX
+instance (ToData t) => ToData (Polynomial t) where
+    {-# INLINABLE toBuiltinData #-}
+    toBuiltinData (P a) = toBuiltinData a
+
+instance (FromData t) => FromData (Polynomial t) where
+    {-# INLINABLE fromBuiltinData #-}
+    fromBuiltinData i = P <$> fromBuiltinData i
+
+instance (UnsafeFromData t) => UnsafeFromData (Polynomial t) where
+    {-# INLINABLE unsafeFromBuiltinData #-}
+    unsafeFromBuiltinData i = P $ unsafeFromBuiltinData i
+#endif
