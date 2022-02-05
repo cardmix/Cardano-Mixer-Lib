@@ -24,7 +24,7 @@ import           Prelude
 
 import           Crypto
 
-data MixerContractsDefinition = MintAdminKey | UseMixer | MixerStateQuery | ConnectToPAB | RetrieveTimeLocked
+data MixerContractsDefinition = MintAdminKey | MixerUse | MixerRelay | MixerStateQuery | ConnectToPAB | RetrieveTimeLocked
     deriving (Eq, Ord, Show, Generic, FromJSON, ToJSON)
     deriving anyclass (Data.OpenApi.ToSchema)
 
