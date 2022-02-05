@@ -257,5 +257,4 @@ lineFunction _ _ _ = (O, mempty)
 #if PLUTUSTX
 unstableMakeIsData ''R
 unstableMakeIsData ''Q
-unstableMakeIsData ''Zp
 #endif
