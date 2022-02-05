@@ -67,6 +67,7 @@ common lang-frontend
 library
   if flag(frontend)
     import: lang-frontend
+    default-extensions: CPP
     exposed-modules:
       ClientLog
       Configuration.QAPConfig
