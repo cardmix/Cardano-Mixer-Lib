@@ -23,11 +23,9 @@ module Crypto.Zp (Zp(..), FiniteField(..), toZp, fromZp) where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
-import           PlutusTx.IsData
 import           PlutusTx.Prelude
 import           Prelude                           (Show)
 import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
-
 
 ------------------------- Finite Field -----------------------------
 
@@ -95,19 +93,5 @@ instance forall p. FiniteField p => Eq (Zp p) where
     {-# INLINABLE (==) #-}
     (==) (Zp a) (Zp b) = 0 == modulo (a - b) (fieldPrime (mempty :: p))
 
-------------------------------- PlutusTx support ----------------------------------
 
-#if PLUTUSTX
-instance ToData (Zp p) where
-    {-# INLINABLE toBuiltinData #-}
-    toBuiltinData (Zp a) = toBuiltinData a
-
-instance FromData (Zp p) where
-    {-# INLINABLE fromBuiltinData #-}
-    fromBuiltinData i = Zp <$> fromBuiltinData i
-
-instance UnsafeFromData (Zp p) where
-    {-# INLINABLE unsafeFromBuiltinData #-}
-    unsafeFromBuiltinData i = Zp $ unsafeFromBuiltinData i
-#endif
 

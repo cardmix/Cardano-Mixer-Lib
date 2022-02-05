@@ -23,7 +23,6 @@ module Crypto.BLS12381 where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
-import           PlutusTx.IsData
 import           PlutusTx.Prelude                  
 import           Prelude                           (Show, IO)
 import qualified Prelude                           ((<$>))
@@ -251,10 +250,3 @@ lineFunction (CP x y) (CP x1 y1) (CP x2 y2)
     x3' = l' * l' - x1 - x2
     y3' = l' * (x1 - x3') - y1
 lineFunction _ _ _ = (O, mempty)
-
-------------------------------- PlutusTx support ----------------------------------
-
-#if PLUTUSTX
-unstableMakeIsData ''R
-unstableMakeIsData ''Q
-#endif

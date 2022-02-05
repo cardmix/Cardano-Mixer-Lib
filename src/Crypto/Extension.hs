@@ -23,7 +23,6 @@ module Crypto.Extension (Extension(..), IsExtension(..), IrreducibleMonic(..), c
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
-import           PlutusTx.IsData
 import           PlutusTx.Prelude
 import           Prelude                           (Show)
 
@@ -169,19 +168,3 @@ powUnitary :: (IsExtension t, IrreducibleMonic t e) => Extension t e -> Integer 
 powUnitary x n
             | n < 0     = pow (conj x) (negate n)
             | otherwise = pow x n
-
-------------------------------- PlutusTx support ----------------------------------
-
-#if PLUTUSTX
-instance ToData t => ToData (Extension t e) where
-    {-# INLINABLE toBuiltinData #-}
-    toBuiltinData (E (P a)) = toBuiltinData a
-
-instance FromData t => FromData (Extension t e) where
-    {-# INLINABLE fromBuiltinData #-}
-    fromBuiltinData i = E . P <$> fromBuiltinData i
-
-instance UnsafeFromData t => UnsafeFromData (Extension t e) where
-    {-# INLINABLE unsafeFromBuiltinData #-}
-    unsafeFromBuiltinData i = E $ P $ unsafeFromBuiltinData i
-#endif
