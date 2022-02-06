@@ -25,6 +25,7 @@ import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
 import           PlutusTx.Prelude
 import           Prelude                           (Show)
+import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
 
 import           Crypto.Polynomial
 import           Crypto.Zp                         (Zp, FiniteField(..))
@@ -50,6 +51,10 @@ class Monoid e => IrreducibleMonic t e where
 newtype Extension t e = E (Polynomial t)
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
+
+instance Arbitrary t => Arbitrary (Extension t e) where
+  {-# INLINABLE arbitrary #-}
+  arbitrary = genericArbitrary
 
 instance (IsExtension t, IrreducibleMonic t e) => IsExtension (Extension t e) where
     {-# INLINABLE deg #-}

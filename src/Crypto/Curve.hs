@@ -25,6 +25,7 @@ import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
 import           PlutusTx.Prelude                  
 import           Prelude                           (Show)
+import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
 
 import           Crypto.Zp                         (Zp, fromZp)
 
@@ -35,6 +36,10 @@ class (Ring t, Group t, Eq t) => EllipticCurve t where
 data CurvePoint t = CP t t | O
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
+
+instance Arbitrary t => Arbitrary (CurvePoint t) where
+  {-# INLINABLE arbitrary #-}
+  arbitrary = genericArbitrary
 
 instance EllipticCurve t => Semigroup (CurvePoint t) where
     {-# INLINABLE (<>) #-}

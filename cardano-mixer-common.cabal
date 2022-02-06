@@ -192,3 +192,17 @@ library
       uuid                                   -any
     hs-source-dirs: src
 
+test-suite crypto-test
+  Type:                 exitcode-stdio-1.0
+  Default-Language:     Haskell2010
+  Hs-Source-Dirs:       test
+  Ghc-Options:          -Wall
+  Main-Is:              Main.hs
+  Other-Modules:        Test
+  Build-Depends:
+    base                                   -any,
+    aeson                                  -any,
+    cardano-mixer-common                   -any,
+    QuickCheck                             -any,
+    random                                 -any
+    

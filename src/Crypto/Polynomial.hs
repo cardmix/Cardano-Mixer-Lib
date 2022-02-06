@@ -24,14 +24,20 @@ import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
 import           PlutusTx.Prelude                  
 import           Prelude                           (Show)
+import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
 
 import           Utils.Common
+
 
 ------------------------- Polynomials --------------------------------
 
 newtype Polynomial t = P [t]
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
+
+instance Arbitrary t => Arbitrary (Polynomial t) where
+  {-# INLINABLE arbitrary #-}
+  arbitrary = genericArbitrary
 
 instance (Ring t, Eq t) => AdditiveSemigroup (Polynomial t) where
     {-# INLINABLE (+) #-}

@@ -26,8 +26,7 @@ import           GHC.Generics                      (Generic)
 import           PlutusTx.Prelude                  hiding ((<$>), (<*>), toList, mapM)
 import           Prelude                           (Show (..), IO, (<$>), (<*>), FilePath, init, String, last, putStrLn, print)
 import qualified Prelude                           (mconcat, mapM)
-import           Test.QuickCheck                   (Arbitrary(..))
-import           Test.QuickCheck.Arbitrary.Generic (genericArbitrary)
+import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
 
 import           Configuration.QAPConfig
 import           Crypto.BLS12381                   (Fr, T1, T2, pairing, generateFr)
@@ -106,6 +105,10 @@ data ProveArguments = ProveArguments SetupArguments ReferenceString Assignment
 data Proof = Proof (CurvePoint T1) (CurvePoint T2) (CurvePoint T1)
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
+
+instance Arbitrary Proof where
+  {-# INLINABLE arbitrary #-}
+  arbitrary = genericArbitrary
 
 -- Verify
 

@@ -36,6 +36,10 @@ newtype Zp p = Zp Integer
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
+instance Arbitrary (Zp p) where
+  {-# INLINABLE arbitrary #-}
+  arbitrary = genericArbitrary
+
 {-# INLINABLE toZp #-}
 toZp :: forall p. FiniteField p => Integer -> Zp p
 toZp a = Zp $ modulo a (fieldPrime (mempty :: p))
@@ -47,10 +51,6 @@ fromZp (Zp a) = a
 instance forall p. FiniteField p => Ord (Zp p) where
     {-# INLINABLE (<=) #-}
     (<=) (Zp a) (Zp b) = modulo a (fieldPrime (mempty :: p)) <= modulo b (fieldPrime (mempty :: p))
-
-instance Arbitrary (Zp p) where
-  {-# INLINABLE arbitrary #-}
-  arbitrary = genericArbitrary
 
 instance forall p. FiniteField p => AdditiveSemigroup (Zp p) where
     {-# INLINABLE (+) #-}

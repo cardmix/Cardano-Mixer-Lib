@@ -16,7 +16,7 @@
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE TypeSynonymInstances       #-}
 
-module MixerProofs (generateWithdrawProof, generateSimulatedWithdrawProof, verifyWithdraw) where
+module MixerProofs (generateWithdrawProof, generateSimulatedWithdrawProof, verifyWithdraw, computeWithdrawWires, withdrawSecret, withdrawCRS) where
 
 import           Data.Aeson                       (decode)
 import           Data.ByteString.Lazy             (readFile)
