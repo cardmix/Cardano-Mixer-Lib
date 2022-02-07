@@ -18,11 +18,11 @@
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE NumericUnderscores         #-}
 
-module Crypto.Polynomial (Polynomial(..), degPoly, leading, unPoly, toPoly, fromConst, qr, quotientRemainder, monomialMultiply, removeZeroTerms) where
+module Crypto.Polynomial (Polynomial(..), degPoly, leading, unPoly, toPoly, fromConst, qr, remainderPoly, monomialMultiply, removeZeroTerms) where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
-import           PlutusTx.Prelude                  
+import           PlutusTx.Prelude
 import           Prelude                           (Show)
 import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
 
@@ -53,6 +53,12 @@ instance (Ring t, Eq t) => AdditiveMonoid (Polynomial t) where
 
 instance (Ring t, Eq t) => MultiplicativeSemigroup (Polynomial t) where
     {-# INLINABLE (*) #-}
+    (*) (P [])       _          = zero
+    (*) _           (P [])      = zero
+    (*) (P [x1])    (P [y1])    = P [x1*y1]
+    (*) (P [x1,x2]) (P [y1])    = P [x1*y1, x2*y1]
+    (*) (P [x1])    (P [y1,y2]) = P [x1*y1, x1*y2]
+    (*) (P [x1,x2]) (P [y1,y2]) = P [x1*y1, x1*y2+x2*y1, x2*y2]
     (*) (P x) (P y) = P $ coef 0
         where
             coef :: Integer -> [t]
@@ -111,10 +117,25 @@ fromConst a
 qr :: (Ring t, Group t, Eq t) => Polynomial t -> Polynomial t -> (Polynomial t, Polynomial t)
 qr x y = quotientRemainder x y zero
 
+{-# INLINABLE remainderPoly #-}
+remainderPoly :: (Ring t, Group t, Eq t) => Polynomial t -> Polynomial t -> Polynomial t
+remainderPoly (P [x1, x2, x3]) (P [y1, y2, y3]) = removeZeroTerms $ P [x1 - a*y1, x2 - a*y2]
+    where a = x3 * inv y3
+remainderPoly x y
+                    | n < 0       = x
+                    | otherwise   = remainderPoly x' y
+    where
+        a    = leading x * inv (leading y)
+        n    = degX - degY
+        y'   = monomialMultiply y (a, n)
+        x'   = x - y'
+        degX = degPoly x
+        degY = degPoly y
+
 {-# INLINABLE quotientRemainder #-}
 quotientRemainder :: (Ring t, Group t, Eq t) => Polynomial t -> Polynomial t -> Polynomial t -> (Polynomial t, Polynomial t)
 quotientRemainder x y q
-                    | degX < degY = (q, x)
+                    | n < 0       = (q, x)
                     | otherwise   = quotientRemainder x' y q'
     where
         a    = leading x * inv (leading y)

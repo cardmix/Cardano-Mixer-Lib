@@ -19,7 +19,7 @@
 {-# LANGUAGE TypeOperators              #-}
 {-# LANGUAGE NumericUnderscores         #-}
 
-module Crypto.Curve (CurvePoint(..), EllipticCurve(..), add, dbl, mul, toJ, fromJ, dblJ) where
+module Crypto.Curve (CurvePoint(..), EllipticCurve(..), add, dbl, mul) where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
@@ -95,11 +95,11 @@ mul p n = fromJ $ mul'' (toJ p) (fromZp n)      -- multiplication using Jacobian
 -- {-# INLINABLE mul' #-}
 -- mul' :: EllipticCurve t => CurvePoint t -> Integer -> CurvePoint t
 -- mul' p n
---   | n < 0     = inv $ mul' p (-n)
---   | n == 0    = O
---   | n == 1    = p
---   | even n    = p'
---   | otherwise = add p p'
+--   | n < 0           = inv $ mul' p (negate n)
+--   | n == 0          = O
+--   | n == 1          = p
+--   | modulo n 2 == 0 = p'
+--   | otherwise       = add p p'
 --   where
 --     p' = mul' (dbl p) (divide n 2)
 

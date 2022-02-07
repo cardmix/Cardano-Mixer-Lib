@@ -19,7 +19,7 @@
 {-# LANGUAGE TypeFamilies               #-}
 {-# LANGUAGE TypeOperators              #-}
 
-module Crypto.Extension (Extension(..), IsExtension(..), IrreducibleMonic(..), conj, pow, powUnitary, embed, embed2) where
+module Crypto.Extension (Extension(..), IsExtension(..), IrreducibleMonic(..), conj, pow, powUnitary, embed, embed2, testE) where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
@@ -107,7 +107,7 @@ instance IsExtension t => AdditiveMonoid (Extension t e) where
 
 instance (IsExtension t, IrreducibleMonic t e) => MultiplicativeSemigroup (Extension t e) where
     {-# INLINABLE (*) #-}
-    (*) (E p1) (E p2) = E $ snd $ qr (p1 * p2) (poly (mempty :: e))
+    (*) (E p1) (E p2) = E $ remainderPoly (p1 * p2) (poly (mempty :: e))
 
 instance (IsExtension t, IrreducibleMonic t e) => MultiplicativeMonoid (Extension t e) where
     {-# INLINABLE one #-}
@@ -135,7 +135,7 @@ instance (IsExtension t, IrreducibleMonic t e) => Group (Extension t e) where
 instance (IsExtension t, IrreducibleMonic t e) => Eq (Extension t e) where
     {-# INLINABLE (==) #-}
     (==) (E a) (E b) = r == zero
-        where (_, r) = qr (a - b) (poly (mempty :: e))
+        where r = remainderPoly (a - b) (poly (mempty :: e))
 
 {-# INLINABLE embed #-}
 embed :: IsExtension t => t -> Extension t e
@@ -173,3 +173,6 @@ powUnitary :: (IsExtension t, IrreducibleMonic t e) => Extension t e -> Integer 
 powUnitary x n
             | n < 0     = pow (conj x) (negate n)
             | otherwise = pow x n
+
+testE :: (AdditiveMonoid b, MultiplicativeSemigroup b) => [b] -> [b] -> b
+testE ee1 ee2 = sum $ zipWith (*) ee1 ee2

@@ -202,7 +202,9 @@ test-suite crypto-test
   Build-Depends:
     base                                   -any,
     aeson                                  -any,
+    bytestring                             -any,
     cardano-mixer-common                   -any,
+    containers                             -any,
     QuickCheck                             -any,
     random                                 -any
     

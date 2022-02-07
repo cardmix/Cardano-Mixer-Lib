@@ -58,7 +58,7 @@ instance forall p. FiniteField p => AdditiveSemigroup (Zp p) where
 
 instance forall p. FiniteField p => AdditiveGroup (Zp p) where
     {-# INLINABLE (-) #-}
-    (-) (Zp a) (Zp b) = Zp $ modulo (a-b) (fieldPrime (mempty :: p))
+    (-) (Zp a) (Zp b) = Zp $ modulo (a - b) (fieldPrime (mempty :: p))
 
 instance forall p. FiniteField p => AdditiveMonoid (Zp p) where
     {-# INLINABLE zero #-}

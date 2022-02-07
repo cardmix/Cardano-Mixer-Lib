@@ -34,6 +34,8 @@ import           Test
 main :: IO ()
 main = do
     t0 <- getCPUTime
+    -- test_Extension
+    -- test_Prove
     quickCheck prop_CorrectProof
     t1 <- getCPUTime
     print $ (fromIntegral (t1 - t0) :: Double) / (10^(12 :: Integer))
