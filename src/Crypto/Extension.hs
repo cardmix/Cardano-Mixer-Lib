@@ -107,6 +107,13 @@ instance IsExtension t => AdditiveMonoid (Extension t e) where
 
 instance (IsExtension t, IrreducibleMonic t e) => MultiplicativeSemigroup (Extension t e) where
     {-# INLINABLE (*) #-}
+    (*) (E (P [x1, x2])) (E (P [y1, y2]))
+            | p == one  = E $ removeZeroTerms $ P [x1' - x3', x2']
+            | otherwise = E $ remainderPoly (P [x1', x2', x3']) (poly (mempty :: e))
+        where x1' = x1*y1
+              x2' = x1*y2+x2*y1
+              x3' = x2*y2
+              p = head $ unPoly $ poly (mempty :: e) :: t
     (*) (E p1) (E p2) = E $ remainderPoly (p1 * p2) (poly (mempty :: e))
 
 instance (IsExtension t, IrreducibleMonic t e) => MultiplicativeMonoid (Extension t e) where
