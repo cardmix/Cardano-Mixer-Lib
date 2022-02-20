@@ -22,7 +22,7 @@ source-repository-package
     plutus-use-cases
     quickcheck-dynamic
     web-ghc  
-  tag: ea1bfc6a49ee731c67ada3bfb326ee798001701a
+  tag: 3412d474833e9b9ca80cbb0a9b039b38923f4e93
 
 -- We never, ever, want this.
 write-ghc-environment-files: never

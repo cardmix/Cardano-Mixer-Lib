@@ -33,6 +33,7 @@ data MixerContractsDefinition = MintAdminKey | MixerUse | MixerRelay | MixerStat
 -- Parameters for the "deposit" endpoint
 data DepositParams = DepositParams
     {
+        dpPKH            :: !PaymentPubKeyHash,
         dpValue          :: !Value,
         dpLeaf           :: !Fr
     }
