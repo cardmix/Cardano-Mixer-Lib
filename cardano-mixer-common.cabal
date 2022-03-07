@@ -84,7 +84,6 @@ library
       MixerProofs
       MixerState
       MixerUserData
-      Requests
       Utils.Common
     other-modules: 
       PlutusTx.Applicative
@@ -153,7 +152,6 @@ library
       MixerProofs
       MixerState
       MixerUserData
-      Requests
       Utils.Common            
     build-depends:
       base                          >= 4.9 && < 5,
