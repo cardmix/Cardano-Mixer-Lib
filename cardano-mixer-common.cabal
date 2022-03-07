@@ -80,7 +80,7 @@ library
       Crypto.Extension
       Crypto.Polynomial
       Crypto.Zp
-      MixerContractsDefinition
+      MixerFrontendContracts
       MixerProofs
       MixerState
       MixerUserData

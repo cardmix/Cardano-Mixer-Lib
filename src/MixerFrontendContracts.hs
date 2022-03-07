@@ -14,7 +14,7 @@
 {-# LANGUAGE TypeOperators      #-}
 
 
-module MixerContractsDefinition where
+module MixerFrontendContracts where
 
 import           Data.Aeson                          (FromJSON(..), ToJSON(..), FromJSONKey(..), ToJSONKey(..))
 import qualified Data.OpenApi
@@ -24,7 +24,7 @@ import           Prelude
 
 import           Crypto
 
-data MixerContractsDefinition = MintAdminKey | MixerUse | MixerRelay | MixerStateQuery | ConnectToPAB | RetrieveTimeLocked
+data MixerFrontendContracts = MixerUse | MixerStateQuery | ConnectToPAB
     deriving (Eq, Ord, Show, Generic, FromJSON, ToJSON)
     deriving anyclass (Data.OpenApi.ToSchema)
 

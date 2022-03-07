@@ -19,7 +19,7 @@ import           GHC.Generics             (Generic)
 import           Network.HTTP.Req
 import           Prelude
 
-import           MixerContractsDefinition hiding (Value)
+import           MixerFrontendContracts   hiding (Value)
 
 
 ------------------------------- API Requests -------------------------------------
