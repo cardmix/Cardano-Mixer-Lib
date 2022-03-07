@@ -25,7 +25,7 @@ import           MixerFrontendContracts   hiding (Value)
 ------------------------------- API Requests -------------------------------------
 
 -- Activate a contract for a given wallet
-activateRequest :: Text -> MixerContractsDefinition -> Maybe Wallet -> IO UUID
+activateRequest :: Text -> MixerFrontendContracts -> Maybe Wallet -> IO UUID
 activateRequest ip x w = runReq defaultHttpConfig $ do
     v <- req
         POST
