@@ -12,7 +12,6 @@
 -- Most users should not use this module directly, but rather use 'PlutusTx.Builtins'.
 module PlutusTx.Builtins.Internal where
 
-import Codec.Serialise
 import Control.DeepSeq (NFData)
 import qualified Data.ByteArray as BA
 import Data.ByteString as BS

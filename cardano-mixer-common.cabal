@@ -116,7 +116,6 @@ library
       aeson                                  -any,
       bytestring                             -any,
       containers                             -any,
-      data-default                           -any,
       deepseq                                -any,
       directory                              -any,
       extra                                  -any,
@@ -125,13 +124,10 @@ library
       memory                                 -any,
       openapi3                               -any,
       random                                 -any,
-      req                                    -any,
-      serialise                              -any,
       text                                   -any,
       generic-arbitrary                      -any,
       prettyprinter                          -any,
-      QuickCheck                             -any,
-      uuid                                   -any
+      QuickCheck                             -any
     hs-source-dirs: src plutus-code
   else
     import: lang
