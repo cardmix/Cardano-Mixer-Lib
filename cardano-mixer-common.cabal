@@ -124,7 +124,6 @@ library
       memory                                 -any,
       openapi3                               -any,
       random                                 -any,
-      text                                   -any,
       generic-arbitrary                      -any,
       prettyprinter                          -any,
       QuickCheck                             -any

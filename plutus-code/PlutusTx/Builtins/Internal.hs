@@ -14,12 +14,9 @@ module PlutusTx.Builtins.Internal where
 
 import Control.DeepSeq (NFData)
 import qualified Data.ByteArray as BA
-import Data.ByteString as BS
 import Data.Coerce (coerce)
 import Data.Hashable (Hashable)
 import Data.Maybe (fromMaybe)
-import Data.Text as Text (Text, empty)
-import Data.Text.Encoding as Text (decodeUtf8, encodeUtf8)
 import GHC.Generics (Generic)
 import PlutusTx.Utils (mustBeReplaced)
 import Prettyprinter (Pretty (..), viaShow)

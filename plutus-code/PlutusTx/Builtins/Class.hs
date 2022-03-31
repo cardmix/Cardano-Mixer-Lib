@@ -11,11 +11,9 @@
 
 module PlutusTx.Builtins.Class where
 
-import Data.ByteString (ByteString)
 import PlutusTx.Builtins.Internal
 
 import Data.String (IsString (..))
-import Data.Text (Text, pack)
 
 import qualified GHC.Magic as Magic
 import PlutusTx.Base (const, id, ($))
