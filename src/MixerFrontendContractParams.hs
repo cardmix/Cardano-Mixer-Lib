@@ -14,19 +14,14 @@
 {-# LANGUAGE TypeOperators      #-}
 
 
-module MixerFrontendContracts where
+module MixerFrontendContractParams where
 
 import           Data.Aeson                          (FromJSON(..), ToJSON(..), FromJSONKey(..), ToJSONKey(..))
-import qualified Data.OpenApi
 import           Data.Map
 import           GHC.Generics                        (Generic)
 import           Prelude                             
 
 import           Crypto
-
-data MixerFrontendContracts = MixerUse | MixerStateQuery | ConnectToPAB
-    deriving (Eq, Ord, Show, Generic, FromJSON, ToJSON)
-    deriving anyclass (Data.OpenApi.ToSchema)
 
 ---------------------------------------- Types for API calls to the PAB -------------------------------------
 

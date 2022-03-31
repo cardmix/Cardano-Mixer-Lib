@@ -80,7 +80,7 @@ library
       Crypto.Extension
       Crypto.Polynomial
       Crypto.Zp
-      MixerFrontendContracts
+      MixerFrontendContractParams
       MixerProofs
       MixerState
       MixerUserData
@@ -121,7 +121,6 @@ library
       extra                                  -any,
       ghc-prim                               -any,
       memory                                 -any,
-      openapi3                               -any,
       random                                 -any,
       generic-arbitrary                      -any,
       prettyprinter                          -any,
