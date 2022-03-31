@@ -120,7 +120,6 @@ library
       directory                              -any,
       extra                                  -any,
       ghc-prim                               -any,
-      hashable                               -any,
       memory                                 -any,
       openapi3                               -any,
       random                                 -any,

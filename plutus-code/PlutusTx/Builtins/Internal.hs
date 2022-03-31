@@ -15,7 +15,6 @@ module PlutusTx.Builtins.Internal where
 import Control.DeepSeq (NFData)
 import qualified Data.ByteArray as BA
 import Data.Coerce (coerce)
-import Data.Hashable (Hashable)
 import Data.Maybe (fromMaybe)
 import GHC.Generics (Generic)
 import PlutusTx.Utils (mustBeReplaced)
