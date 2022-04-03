@@ -141,7 +141,7 @@ library
       Crypto.Extension
       Crypto.Polynomial
       Crypto.Zp
-      MixerFrontendContracts
+      MixerFrontendContractParams
       MixerProofs
       MixerState
       MixerUserData
