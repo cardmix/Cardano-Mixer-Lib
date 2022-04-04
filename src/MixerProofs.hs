@@ -40,13 +40,12 @@ generateWithdrawProof pkh ds sas state = do
     proof <- generateProof pa
     return (lastDeposit, insPub, proof)
 
-generateSimulatedWithdrawProof :: Fr -> DepositSecret -> ShieldedAccountSecret -> MixerState -> IO ((Integer, Integer), [Fr], Proof)
-generateSimulatedWithdrawProof pkh ds sas state = do
-    let (lastDeposit, outs, insPub, _) = computeWithdrawWires pkh ds sas state
+generateSimulatedWithdrawProof :: ZKProofSecret -> Fr -> DepositSecret -> ShieldedAccountSecret -> MixerState -> ((Integer, Integer), [Fr], Proof)
+generateSimulatedWithdrawProof secret pkh ds sas state = (lastDeposit, insPub, proof)
+    where
+        (lastDeposit, outs, insPub, _) = computeWithdrawWires pkh ds sas state
         subs = [one] ++ outs ++ insPub
-    secret <- generateProofSecret
-    let proof = simulate withdrawSecret secret withdrawCRS subs
-    return (lastDeposit, insPub, proof)
+        proof = simulate withdrawSecret secret withdrawCRS subs
 
 {-# INLINABLE verifyWithdraw #-}
 verifyWithdraw :: [Fr] -> Proof -> Bool
