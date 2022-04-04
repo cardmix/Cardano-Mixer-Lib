@@ -4,27 +4,20 @@
 {-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE NoImplicitPrelude          #-}
-{-# LANGUAGE NumericUnderscores         #-}
-{-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
-{-# LANGUAGE TemplateHaskell            #-}
-{-# LANGUAGE TypeApplications           #-}
 {-# LANGUAGE TypeFamilies               #-}
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE TypeSynonymInstances       #-}
 
 module MixerUserData where
 
 import           Data.Aeson                       (FromJSON, ToJSON)
+import           Data.Text                        (Text, unpack)
 import           GHC.Generics                     (Generic)
 import           PlutusTx.Prelude                 hiding ((<$>), (<*>))
-import           Prelude                          (IO, Show(..), String, (<$>), (<*>), read)
+import           Prelude                          (IO, Show(..), (<$>), (<*>), read)
 
 import           Crypto
-
 
 data DepositSecret = DepositSecret
     {
@@ -33,12 +26,12 @@ data DepositSecret = DepositSecret
     } deriving (Generic, FromJSON, ToJSON)
 
 instance Show DepositSecret where
-    show (DepositSecret r1 r2) = show $ (fromZp r1) * (fieldPrime R) + (fromZp r2)
+    show (DepositSecret r1 r2) = show $ fromZp r1 * fieldPrime R + fromZp r2
 
-readDepositSecret :: String -> DepositSecret
+readDepositSecret :: Text -> DepositSecret
 readDepositSecret str = DepositSecret (toZp r1) (toZp r2)
     where
-        n = read str :: Integer
+        n = read $ unpack str :: Integer
         (r1, r2) = divMod n (fieldPrime R)
 
 generateDepositSecret :: IO DepositSecret

@@ -119,12 +119,13 @@ library
       deepseq                                -any,
       directory                              -any,
       extra                                  -any,
+      generic-arbitrary                      -any,
       ghc-prim                               -any,
       memory                                 -any,
-      random                                 -any,
-      generic-arbitrary                      -any,
       prettyprinter                          -any,
-      QuickCheck                             -any
+      QuickCheck                             -any,
+      random                                 -any,
+      text                                   -any
     hs-source-dirs: src plutus-code
   else
     import: lang

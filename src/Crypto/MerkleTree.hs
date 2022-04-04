@@ -1,21 +1,13 @@
 {-# LANGUAGE DataKinds                  #-}
-{-# LANGUAGE DeriveAnyClass             #-}
-{-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE NoImplicitPrelude          #-}
 {-# LANGUAGE OverloadedLists            #-}
 {-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE PatternSynonyms            #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
-{-# LANGUAGE TemplateHaskell            #-}
-{-# LANGUAGE TypeApplications           #-}
 {-# LANGUAGE TypeFamilies               #-}
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE NumericUnderscores         #-}
 
 module Crypto.MerkleTree (addMerkleLeaf, getMerkleCoPath, mimcHash) where
 
@@ -42,7 +34,7 @@ getMerkleCoPath' (lst, path, pos) = getMerkleCoPath' (f lst, path ++ [lst !! coP
         f []         = []
         f (x1:x2:xs) = (if x1 == zero && x2 == zero then zero else mimcHash x1 x2) : f xs
         f _          = error ()
-        
+
 {-# INLINABLE addMerkleLeaf #-}
 addMerkleLeaf :: FiniteField p => Zp p -> Integer -> [Zp p] -> [Zp p]
 addMerkleLeaf l pos oPath

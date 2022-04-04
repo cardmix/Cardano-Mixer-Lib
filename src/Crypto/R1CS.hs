@@ -4,18 +4,12 @@
 {-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE NoImplicitPrelude          #-}
 {-# LANGUAGE OverloadedLists            #-}
 {-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE PatternSynonyms            #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
-{-# LANGUAGE TemplateHaskell            #-}
-{-# LANGUAGE TypeApplications           #-}
 {-# LANGUAGE TypeFamilies               #-}
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE NumericUnderscores         #-}
 
 module Crypto.R1CS (R1C(..), R1CS, Wires(..), Assignment, makeSub, solveR1CS, getR1CSPolynomials, loadR1CSFile) where
 
@@ -118,7 +112,7 @@ loadR1CSFile str = do
     let maybeR1CSFile = decode input :: Maybe R1CSFile
         (r1cs, wires) = decodeR1CS maybeR1CSFile
         n             = nearestPowerOfTwo $ length r1cs
-    return $ (addEmptyR1CS n r1cs, wires)
+    return (addEmptyR1CS n r1cs, wires)
 
 {-# INLINABLE addEmptyR1CS #-}
 addEmptyR1CS :: Integer -> R1CS -> R1CS
@@ -132,7 +126,7 @@ addEmptyR1CS n r1cs
 decodeR1CS :: Maybe R1CSFile -> (R1CS, Wires)
 decodeR1CS mf = case mf of
                   Nothing -> error()
-                  Just rf -> 
+                  Just rf ->
                         let
                           r = constraints rf
                           f x = R1C {leftCoefs = g 0 x, rightCoefs = g 1 x, outCoefs = g 2 x}

@@ -5,25 +5,20 @@
 {-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE NoImplicitPrelude          #-}
 {-# LANGUAGE OverloadedLists            #-}
 {-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE PatternSynonyms            #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
-{-# LANGUAGE StandaloneDeriving         #-}
-{-# LANGUAGE TemplateHaskell            #-}
-{-# LANGUAGE TypeApplications           #-}
 {-# LANGUAGE TypeFamilies               #-}
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE NumericUnderscores         #-}
+
+
 
 module Crypto.BLS12381 where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
-import           PlutusTx.Prelude                  
+import           PlutusTx.Prelude
 import           Prelude                           (Show, IO)
 import qualified Prelude                           ((<$>))
 import           System.Random                     (randomRIO)
@@ -131,7 +126,7 @@ instance Monoid E6 where
 
 instance IrreducibleMonic T2 E6 where
     {-# INLINABLE poly #-}
-    poly = const $ toPoly [ E (zero - 
+    poly = const $ toPoly [ E (zero -
       toPoly [toZp 0xd0088f51cbff34d258dd3db21a5d66bb23ba5c279c2895fb39869507b587b120f55ffff58a9ffffdcff7fffffffd556
         , toZp 0xd0088f51cbff34d258dd3db21a5d66bb23ba5c279c2895fb39869507b587b120f55ffff58a9ffffdcff7fffffffd555
         ]), zero, zero, one]
@@ -160,7 +155,7 @@ type TT = Extension (Extension T2 E6) E12
 
 {-# INLINABLE pairing #-}
 pairing :: CurvePoint T1 -> CurvePoint T2 -> TT
-pairing p1 p2 = finalExponentiationBLS12 parameterHex $ 
+pairing p1 p2 = finalExponentiationBLS12 parameterHex $
   millerAlgorithmBLS12 parameterBin p1 p2
 
 -- | [Miller algorithm for Barreto-Lynn-Scott degree 12 curves]

@@ -3,23 +3,18 @@
 {-# LANGUAGE DeriveGeneric      #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE LambdaCase         #-}
-{-# LANGUAGE NamedFieldPuns     #-}
-{-# LANGUAGE NumericUnderscores #-}
 {-# LANGUAGE OverloadedStrings  #-}
 {-# LANGUAGE RankNTypes         #-}
-{-# LANGUAGE TemplateHaskell    #-}
-{-# LANGUAGE TypeApplications   #-}
 {-# LANGUAGE TypeFamilies       #-}
-{-# LANGUAGE TypeOperators      #-}
 
 
 module MixerFrontendContractParams where
 
 import           Data.Aeson                          (FromJSON(..), ToJSON(..), FromJSONKey(..), ToJSONKey(..))
 import           Data.Map
+import           Data.Text                           (Text)
 import           GHC.Generics                        (Generic)
-import           Prelude                             
+import           Prelude
 
 import           Crypto
 
@@ -28,7 +23,7 @@ import           Crypto
 -- Parameters for the "deposit" endpoint
 data DepositParams = DepositParams
     {
-        dpAddress        :: !String,
+        dpAddress        :: !Text,
         dpValue          :: !Value,
         dpLeaf           :: !Fr
     }

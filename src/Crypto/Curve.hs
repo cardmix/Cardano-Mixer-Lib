@@ -5,25 +5,17 @@
 {-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE NoImplicitPrelude          #-}
-{-# LANGUAGE OverloadedLists            #-}
 {-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE PatternSynonyms            #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
-{-# LANGUAGE StandaloneDeriving         #-}
-{-# LANGUAGE TemplateHaskell            #-}
-{-# LANGUAGE TypeApplications           #-}
 {-# LANGUAGE TypeFamilies               #-}
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE NumericUnderscores         #-}
 
 module Crypto.Curve (CurvePoint(..), EllipticCurve(..), add, dbl, mul) where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
-import           PlutusTx.Prelude                  
+import           PlutusTx.Prelude
 import           Prelude                           (Show)
 import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
 
@@ -140,7 +132,7 @@ addJ (x1, y1, z1) (x2, y2, z2)
     v    = u1 * i
     x3   = r * r - j - two * v
     y3   = r * (v - x3) - two * s1 * j
-    z3   = (z1z2 * z1z2 - z1z1 - z2z2) * h    
+    z3   = (z1z2 * z1z2 - z1z1 - z2z2) * h
 
 {-# INLINABLE dblJ #-}
 dblJ :: EllipticCurve t => (t, t, t) -> (t, t, t)
@@ -148,7 +140,7 @@ dblJ (x1, y1, z1)
         | z1 == zero = (one, one, zero)
         | otherwise  = (x3, y3, z3)
   where
-    two = one + one 
+    two = one + one
     three = two + one
     eight = three + three + two
 
