@@ -35,7 +35,7 @@ data WithdrawParams = WithdrawParams
     {
         wpValue         :: !Value,
         wpDepositNum    :: !(Integer, Integer),
-        wpPKH           :: !PaymentPubKeyHash,
+        wpAddress       :: !Text,
         wpPublicInputs  :: ![Fr],
         wpProof         :: !Proof
     }
