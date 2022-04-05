@@ -56,19 +56,24 @@ computeWithdrawWires pkh (DepositSecret r1 r2) (ShieldedAccountSecret v1 v2 v3) 
     where
         a                              = pkh
         leaf                           = mimcHash r1 r2
-        k                              = fst $ fromMaybe (0, 0) $ getMerkleLeafNumber state leaf
+        (k, n)                         = fromMaybe (0, 0) $ getMerkleLeafNumber state leaf
         MerkleTree m leafs             = state !! k
         key                            = mimcHash zero r1
         keyA                           = mimcHash a r2
         oh                             = mimcHash v1 v2
-        nh                             = mimcHash v1 v3
-        coPath                         = getMerkleCoPath leafs m
-        l                              = replicate treeSize zero
+        nh                             = mimcHash (v1 + toZp (m - n)) v3 -- mimcHash v1 v3
+        coPath                         = getMerkleCoPath leafs n -- getMerkleCoPath leafs m
+        l                              = getDepositPath treeSize n -- replicate treeSize zero
         root                           = last coPath
 
         publicOutputWires = replicate 5 zero
         publicInputWires  = [root, a, key, keyA, toZp m, oh, nh]
         privateInputWires = [r1, r2] ++ init coPath ++ l ++ [v1, v2, v3]
+
+getDepositPath :: Integer -> Integer -> [Fr]
+getDepositPath sz n 
+    | sz < 1    = []
+    | otherwise = if even n then one : getDepositPath (sz - 1) (divide (n+1) 2) else zero : getDepositPath (sz - 1) (divide (n+1) 2)
 
 ------------------------------ Withdraw Problem Definition --------------------------------------------
 
