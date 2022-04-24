@@ -15,9 +15,11 @@ import           Data.Aeson                       (FromJSON, ToJSON)
 import           Data.Text                        (Text, unpack)
 import           GHC.Generics                     (Generic)
 import           PlutusTx.Prelude                 hiding ((<$>), (<*>))
-import           Prelude                          (IO, Show(..), (<$>), (<*>), read)
+import           Prelude                          (IO, Show(..), (<$>), (<*>))
+import           Text.Read                        (readMaybe)
 
 import           Crypto
+
 
 data DepositSecret = DepositSecret
     {
@@ -28,11 +30,11 @@ data DepositSecret = DepositSecret
 instance Show DepositSecret where
     show (DepositSecret r1 r2) = show $ fromZp r1 * fieldPrime R + fromZp r2
 
-readDepositSecret :: Text -> DepositSecret
-readDepositSecret str = DepositSecret (toZp r1) (toZp r2)
-    where
-        n = read $ unpack str :: Integer
-        (r1, r2) = divMod n (fieldPrime R)
+readDepositSecret :: Text -> Maybe DepositSecret
+readDepositSecret str = do
+        n <- readMaybe (unpack str) :: Maybe Integer
+        let (r1, r2) = divMod n (fieldPrime R)
+        return $ DepositSecret (toZp r1) (toZp r2)
 
 generateDepositSecret :: IO DepositSecret
 generateDepositSecret = DepositSecret <$> generateFr <*> generateFr
