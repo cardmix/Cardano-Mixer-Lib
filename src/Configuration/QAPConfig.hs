@@ -5,7 +5,7 @@ module Configuration.QAPConfig where
 
 import Prelude                       (String, FilePath)
 
------------------------- File constants ------------------------------
+-------------------------- File constants ------------------------------
 
 fileQAPPub :: FilePath
 fileQAPPub = "QAPs/qap-public"

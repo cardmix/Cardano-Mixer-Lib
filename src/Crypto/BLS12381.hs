@@ -13,7 +13,6 @@
 {-# LANGUAGE TypeFamilies               #-}
 
 
-
 module Crypto.BLS12381 where
 
 import           Data.Aeson                        (FromJSON, ToJSON)

@@ -22,7 +22,6 @@ import           MixerState
 import           MixerUserData
 import           Utils.Common                     (replicate, last, init)
 
-
 ------------------------------------ Withdraw Proof ---------------------------------------------------
 
 -- TODO: use data types here
