@@ -13,22 +13,20 @@
 
 module Crypto.ZKSNARK where
 
-import           Data.Aeson                        (FromJSON(..), ToJSON(..), encode, decode)
-import           Data.ByteString.Lazy              (writeFile, readFile)
-import           Data.Map                          (Map, toList, findWithDefault)
+import           Data.Aeson                        (FromJSON(..), ToJSON(..), encode)
+import           Data.ByteString.Lazy              (writeFile)
+import           Data.Map                          (toList)
 import           GHC.Generics                      (Generic)
 import           PlutusTx.Prelude                  hiding ((<$>), (<*>), toList, mapM)
 import           Prelude                           (Show (..), IO, (<$>), (<*>), FilePath, init, String, last, putStrLn, print)
-import qualified Prelude                           (mconcat, mapM)
 import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
 
-import           Configuration.QAPConfig
 import           Crypto.BLS12381                   (Fr, T1, T2, pairing, generateFr)
 import           Crypto.Curve                      (CurvePoint (..), EllipticCurve(..), mul)
 import           Crypto.DFT
 import           Crypto.Extension                  (pow)
-import           Crypto.R1CS                       (R1CS, R1C(..), Wires(..), Assignment, getR1CSPolynomials)
-import           Utils.Common                      (replicate, numBatches, selectBatch)
+import           Crypto.R1CS                       (R1CS, Wires(..), Assignment, getR1CSPolynomials)
+import           Utils.Common                      (replicate)
 
 ----------------------- ZKSNARK data types ---------------------------
 
@@ -115,25 +113,19 @@ data VerifyArguments = VerifyArguments ReducedReferenceString [Fr] Proof
 generateSetupSecret :: IO ZKSetupSecret
 generateSetupSecret = ZKSetupSecret <$> generateFr <*> generateFr <*> generateFr <*> generateFr <*> generateFr
 
-generateCRS :: SetupArguments -> IO ()
-generateCRS sa = do
+generateCRS :: FilePath -> SetupArguments -> IO ()
+generateCRS fileCRS sa = do
       secret <- generateSetupSecret
-      qapData <- computeQAPData secret sa
-      -- qapData <- loadQAPData      
-      let crs    = setup secret (setupR1CS sa) qapData
+      let qapData = computeQAPData secret sa
+          crs    = setup secret (setupR1CS sa) qapData
           redCRS = reduceCRS crs
       writeFile fileCRS (encode crs)
-      writeFile fileReducedCRS (encode redCRS)
+      writeFile (fileCRS ++ ".reduced") (encode redCRS)
       print secret
       putStrLn $ crsToHaskell redCRS
 
 generateProofSecret :: IO ZKProofSecret
 generateProofSecret = ZKProofSecret <$> generateFr <*> generateFr
-
-generateProof :: ProveArguments -> IO Proof
-generateProof pa = do
-      secret <- generateProofSecret
-      return $ prove secret pa
 
 ---------------------- Groth's zk-SNARKs--------------------
 
@@ -208,38 +200,9 @@ type QAP = [QAPPoly]
 data QAPData = QAPData [Fr] [Fr] DFT
   deriving (Show, Generic, ToJSON, FromJSON)
 
--- Function that writes polynomials forming QAP to files
-compileQAP :: SetupArguments -> IO ()
-compileQAP (SetupArguments r1cs (Wires l _ m')) = do
-    let batchSize  = 100
-    Prelude.mconcat $ map (\j -> writeFile (fileQAPPub ++ show j) (encode $ qap $ selectBatch batchSize 0 l j)) [0 .. numBatches batchSize 0 l - 1]
-    Prelude.mconcat $ map (\j -> writeFile (fileQAPPriv ++ show j) (encode $ qap $ selectBatch batchSize (l+1) m' j)) [0 .. numBatches batchSize (l+1) m' - 1]
-  where
-    qap :: (Integer, Integer) -> QAP
-    qap (j1, j2)
-      | j1 > j2   = []
-      | otherwise = QAPPoly (f leftCoefs j1) (f rightCoefs j1) (f outCoefs j1) : qap (j1+1, j2)
-    f :: (R1C -> Map Integer Fr) -> Integer -> IDFT
-    f g i = idft $ toDFT $ map (findWithDefault zero i . g) r1cs
-
--- Function that computes the public and private exponents as well as loads the target polynomial
-computeQAPData :: ZKSetupSecret -> SetupArguments -> IO QAPData
-computeQAPData (ZKSetupSecret a b g d x) (SetupArguments r1cs (Wires l _ m')) = do
-    let batchSize  = 100
-        n = length r1cs
-    mapM_ (f g fileQAPPub filePublic)
-     ([0 .. numBatches batchSize 0 l - 1] :: [Integer])
-    mapM_ (f d fileQAPPriv filePrivate)
-     ([0 .. numBatches batchSize (l+1) m' - 1] :: [Integer])
-    pubExp <- concat <$> Prelude.mapM (\i -> fromMaybe [] . decode <$> readFile (filePublic ++ show i)) ([0 .. numBatches batchSize 0 l - 1] :: [Integer])
-    privExp <- concat <$> Prelude.mapM (\i -> fromMaybe [] . decode <$> readFile (filePrivate ++ show i)) ([0 .. numBatches batchSize (l+1) m' - 1] :: [Integer])
-    return $ QAPData pubExp privExp (targetPolyDFT n)
-  where
-        f :: Fr -> FilePath -> FilePath -> Integer -> IO ()
-        f c fRead fWrite i = do
-          q <- fromMaybe [] . decode <$> readFile (fRead ++ show i)
-          let p = map (evalSetupPoly q (a, b, c, x)) [0 .. length q - 1]
-          writeFile (fWrite ++ show i) (encode p)
+-- Function that computes the public and private exponents
+computeQAPData :: ZKSetupSecret -> SetupArguments -> QAPData
+computeQAPData _ _ = QAPData [] [] (DFT [])   -- TODO: implement fast QAPData computation
 
 -------------------------------- Auxiliary functions -----------------------------
 

@@ -68,24 +68,24 @@ library
   if flag(frontend)
     import: lang-frontend
     exposed-modules:
-      ClientLog
-      Configuration.QAPConfig
       Crypto
       Crypto.ZKSNARK
       Crypto.R1CS
       Crypto.MerkleTree
+      Crypto.MiMC
       Crypto.DFT
       Crypto.BLS12381
       Crypto.Curve
       Crypto.Extension
       Crypto.Polynomial
       Crypto.Zp
-      MixerFrontendContractParams
+      MixerContractParams
       MixerProofs
       MixerState
       MixerUserData
       Utils.Common
     other-modules: 
+      Plutus.V1.Ledger.Value
       PlutusTx.Applicative
       PlutusTx.Base
       PlutusTx.Bool
@@ -117,7 +117,6 @@ library
       bytestring                             -any,
       containers                             -any,
       deepseq                                -any,
-      directory                              -any,
       extra                                  -any,
       generic-arbitrary                      -any,
       ghc-prim                               -any,
@@ -130,19 +129,18 @@ library
   else
     import: lang
     exposed-modules:
-      ClientLog
-      Configuration.QAPConfig
       Crypto
       Crypto.ZKSNARK
       Crypto.R1CS
       Crypto.MerkleTree
+      Crypto.MiMC
       Crypto.DFT
       Crypto.BLS12381
       Crypto.Curve
       Crypto.Extension
       Crypto.Polynomial
       Crypto.Zp
-      MixerFrontendContractParams
+      MixerContractParams
       MixerProofs
       MixerState
       MixerUserData
@@ -153,7 +151,6 @@ library
       bytestring                             -any,
       containers                             -any,
       data-default                           -any,
-      directory                              -any,
       extra                                  -any,
       freer-extras                           -any,
       freer-simple                           -any,

@@ -12,7 +12,7 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module Crypto.Extension (Extension(..), IsExtension(..), IrreducibleMonic(..), conj, pow, powUnitary, embed, embed2, testE) where
+module Crypto.Extension (Extension(..), IsExtension(..), IrreducibleMonic(..), conj, pow, powUnitary, embed, embed2) where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
@@ -173,6 +173,3 @@ powUnitary :: (IsExtension t, IrreducibleMonic t e) => Extension t e -> Integer 
 powUnitary x n
             | n < 0     = pow (conj x) (negate n)
             | otherwise = pow x n
-
-testE :: (AdditiveMonoid b, MultiplicativeSemigroup b) => [b] -> [b] -> b
-testE ee1 ee2 = sum $ zipWith (*) ee1 ee2

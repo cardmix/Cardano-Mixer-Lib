@@ -4,7 +4,6 @@ module PlutusTx.Semigroup (Semigroup (..), Max (..), Min (..)) where
 import Data.Monoid (First (..))
 import Data.Semigroup (Dual (..), Endo (..))
 import PlutusTx.Base
-import qualified PlutusTx.Builtins as Builtins
 import PlutusTx.Functor
 import PlutusTx.List ((++))
 import PlutusTx.Ord (Ord (..), Ordering (..))

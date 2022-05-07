@@ -6,7 +6,6 @@ module PlutusTx.Monoid (Monoid (..), mappend, mconcat, Group (..), gsub) where
 import Data.Monoid (First (..))
 import Data.Semigroup (Dual (..), Endo (..))
 import PlutusTx.Base (id)
-import qualified PlutusTx.Builtins as Builtins
 import PlutusTx.List
 import PlutusTx.Maybe
 import PlutusTx.Semigroup

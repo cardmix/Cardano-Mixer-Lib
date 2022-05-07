@@ -5,6 +5,7 @@ module Crypto
     module Crypto.DFT,
     module Crypto.Extension,
     module Crypto.MerkleTree,
+    module Crypto.MiMC,
     module Crypto.Polynomial,
     module Crypto.R1CS,
     module Crypto.ZKSNARK,
@@ -17,6 +18,7 @@ import           Crypto.Curve
 import           Crypto.DFT
 import           Crypto.Extension
 import           Crypto.MerkleTree
+import           Crypto.MiMC
 import           Crypto.Polynomial
 import           Crypto.R1CS
 import           Crypto.ZKSNARK

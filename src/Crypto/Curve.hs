@@ -81,32 +81,20 @@ dbl (CP x y)
 
 {-# INLINABLE mul #-}
 mul :: EllipticCurve t => CurvePoint t -> Zp p -> CurvePoint t
--- mul p n = mul' p (fromZp n)                  -- multiplication using affine coordinates
-mul p n = fromJ $ mul'' (toJ p) (fromZp n)      -- multiplication using Jacobian coordinates
-
--- {-# INLINABLE mul' #-}
--- mul' :: EllipticCurve t => CurvePoint t -> Integer -> CurvePoint t
--- mul' p n
---   | n < 0           = inv $ mul' p (negate n)
---   | n == 0          = O
---   | n == 1          = p
---   | modulo n 2 == 0 = p'
---   | otherwise       = add p p'
---   where
---     p' = mul' (dbl p) (divide n 2)
+mul p n = fromJ $ mulJ (toJ p) (fromZp n)      -- multiplication using Jacobian coordinates
 
 --------------------- Jacobian coordinates -----------------------------
 
-{-# INLINABLE mul'' #-}
-mul'' :: EllipticCurve t => (t, t, t) -> Integer -> (t, t, t)
-mul'' p n
-  | n < 0           = invJ $ mul'' p (negate n)
+{-# INLINABLE mulJ #-}
+mulJ :: EllipticCurve t => (t, t, t) -> Integer -> (t, t, t)
+mulJ p n
+  | n < 0           = invJ $ mulJ p (negate n)
   | n == 0          = (one, one, zero)
   | n == 1          = p
   | modulo n 2 == 0 = p'   -- 'even n' does not seem to work On-Chain
   | otherwise       = addJ p p'
   where
-    p'   = mul'' (dblJ p) (divide n 2)
+    p'   = mulJ (dblJ p) (divide n 2)
     invJ (x, y, z) = (x, zero-y, z)
 
 {-# INLINABLE addJ #-}

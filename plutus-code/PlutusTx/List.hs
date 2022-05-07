@@ -19,7 +19,7 @@ module PlutusTx.List (
     nubBy,
     zipWith,
     dropWhile,
-    --partition,
+    partition,
     sort,
     sortBy
     ) where

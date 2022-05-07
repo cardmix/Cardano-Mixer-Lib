@@ -1,4 +1,6 @@
 cradle:
   cabal:
-    - path: "./src"
+    - path: "src"
       component: "cardano-mixer-common:lib:cardano-mixer-common"
+    - path: "test"
+      component: "cardano-mixer-common:test:crypto-test"

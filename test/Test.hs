@@ -1,43 +1,29 @@
 {-# LANGUAGE AllowAmbiguousTypes        #-}
 {-# LANGUAGE DataKinds                  #-}
-{-# LANGUAGE DeriveAnyClass             #-}
-{-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
 {-# LANGUAGE NoImplicitPrelude          #-}
 {-# LANGUAGE OverloadedLists            #-}
 {-# LANGUAGE OverloadedStrings          #-}
-{-# LANGUAGE PatternSynonyms            #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
-{-# LANGUAGE StandaloneDeriving         #-}
-{-# LANGUAGE TemplateHaskell            #-}
-{-# LANGUAGE TypeApplications           #-}
 {-# LANGUAGE TypeFamilies               #-}
-{-# LANGUAGE TypeOperators              #-}
-{-# LANGUAGE NumericUnderscores         #-}
 
 module Test where
 
-import           Control.Monad
-import           Data.Aeson                        (FromJSON, ToJSON, decode)
+import           Data.Aeson                        (decode)
 import           Data.ByteString.Lazy              (readFile)
 import           Data.Map                          (fromList)
 import           Data.Maybe                        (fromMaybe)
-import           GHC.Generics                      (Generic)
 import           Prelude                           hiding (readFile)
-import           System.Random                     (randomRIO)
-import           Test.QuickCheck
+import           System.CPUTime                    (getCPUTime)
 
-import           Configuration.QAPConfig           (fileWithdrawR1CS, fileCRS)
 import           Crypto
 import           MixerProofs
 import           MixerState
 import           MixerUserData
 
-import           System.CPUTime                    (getCPUTime)
 
 testPKH :: Fr
 testPKH = Zp 20854110061193685199434827674222213664635638209565180150857366727406
@@ -58,8 +44,8 @@ testMixerState :: MixerState
 testMixerState = [MerkleTree 1 $ padToPowerOfTwo 10 [testLeaf]]
 
 prop_CorrectProof :: ZKProofSecret -> Bool
-prop_CorrectProof secret = 
-    let (lastDeposit, outs, insPub, _) = computeWithdrawWires testPKH testDepositSecret testShieldedAccountSecret testMixerState
+prop_CorrectProof secret =
+    let (_, outs, insPub, _) = computeWithdrawWires testPKH testDepositSecret testShieldedAccountSecret testMixerState
         subs = [Zp 1] ++ outs ++ insPub
         proof = simulate withdrawSecret secret withdrawCRS subs
     in verifyWithdraw subs proof
@@ -67,29 +53,17 @@ prop_CorrectProof secret =
 test_Prove :: IO ()
 test_Prove = do
     t0 <- getCPUTime
-    (r1cs, wires) <- loadR1CSFile fileWithdrawR1CS
-    crs <- fromMaybe emptyCRS . decode <$> readFile fileCRS
+    (r1cs, wires) <- loadR1CSFile "r1cs.json"
+    crs <- fromMaybe emptyCRS . decode <$> readFile "crs.json"
     let sa = SetupArguments r1cs wires
-        (lastDeposit, _, insPub, insPriv) = computeWithdrawWires testPKH testDepositSecret testShieldedAccountSecret testMixerState
+        (_, _, insPub, insPriv) = computeWithdrawWires testPKH testDepositSecret testShieldedAccountSecret testMixerState
     -- constructing witness
     let w  = fromList $ zip ((0 :: Integer) : [6..37])
             ([Zp 1] ++ insPub ++ insPriv)
         sol = solveR1CS r1cs w
         pa = ProveArguments sa crs sol
     t1 <- getCPUTime
-    print $ (fromIntegral (t1 - t0) :: Double) / (10^(12 :: Integer))
-    proof <- generateProof pa
+    print $ (fromIntegral (t1 - t0) :: Double) / 10^(12 :: Integer)
+    secret <- generateProofSecret
+    let proof = prove secret pa
     print proof
-
-test_Extension :: IO ()
-test_Extension = do
-    pp1 <- mapM (const generateFr) ([1..10000] :: [Integer])
-    pp2 <- mapM (const generateFr) ([1..10000] :: [Integer])
-    let CP a b = gen :: CurvePoint T2
-        ee1 = map (pow a) (map fromZp pp1)
-        ee2 = map (pow b) (map fromZp pp2)
-
-    t0 <- getCPUTime
-    print $ testE ee1 ee2
-    t1 <- getCPUTime
-    print $ (fromIntegral (t1 - t0) :: Double) / (10^(12 :: Integer))

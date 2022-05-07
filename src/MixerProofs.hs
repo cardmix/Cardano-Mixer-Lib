@@ -10,13 +10,9 @@
 
 module MixerProofs (generateWithdrawProof, generateSimulatedWithdrawProof, verifyWithdraw, computeWithdrawWires, withdrawSecret, withdrawCRS) where
 
-import           Data.Aeson                       (decode)
-import           Data.ByteString.Lazy             (readFile)
 import           Data.Map                         (fromList)
 import           PlutusTx.Prelude                 hiding (Semigroup(..), (<$>), unless, mapMaybe, find, toList, fromInteger)
-import           Prelude                          (IO, (<$>))
 
-import           Configuration.QAPConfig          (fileWithdrawR1CS, fileCRS)
 import           Crypto
 import           MixerState
 import           MixerUserData
@@ -25,19 +21,15 @@ import           Utils.Common                     (replicate, last, init)
 ------------------------------------ Withdraw Proof ---------------------------------------------------
 
 -- TODO: use data types here
-generateWithdrawProof :: Fr -> DepositSecret -> ShieldedAccountSecret -> MixerState -> IO ((Integer, Integer), [Fr], Proof)
-generateWithdrawProof pkh ds sas state = do
-    (r1cs, wires) <- loadR1CSFile fileWithdrawR1CS
-    crs <- fromMaybe emptyCRS . decode <$> readFile fileCRS
-    let sa = SetupArguments r1cs wires
+generateWithdrawProof :: SetupArguments -> ReferenceString ->
+    ZKProofSecret -> Fr -> DepositSecret -> ShieldedAccountSecret -> MixerState -> ((Integer, Integer), [Fr], Proof)
+generateWithdrawProof sa@(SetupArguments r1cs _) crs secret pkh ds sas state = (lastDeposit, insPub, prove secret pa)
+    where
         (lastDeposit, _, insPub, insPriv) = computeWithdrawWires pkh ds sas state
-    -- constructing witness
-    let w  = fromList $ zip ((0 :: Integer) : [6..37])
-            ([one] ++ insPub ++ insPriv)
+        -- constructing witness
+        w  = fromList $ zip ((0 :: Integer) : [6..37]) ([one] ++ insPub ++ insPriv)
         sol = solveR1CS r1cs w
         pa = ProveArguments sa crs sol
-    proof <- generateProof pa
-    return (lastDeposit, insPub, proof)
 
 generateSimulatedWithdrawProof :: ZKProofSecret -> Fr -> DepositSecret -> ShieldedAccountSecret -> MixerState -> ((Integer, Integer), [Fr], Proof)
 generateSimulatedWithdrawProof secret pkh ds sas state = (lastDeposit, insPub, proof)
@@ -61,8 +53,8 @@ computeWithdrawWires pkh (DepositSecret r1 r2) (ShieldedAccountSecret v1 v2 v3) 
         keyA                           = mimcHash a r2
         oh                             = mimcHash v1 v2
         nh                             = mimcHash (v1 + toZp (m - n)) v3 -- mimcHash v1 v3
-        coPath                         = getMerkleCoPath leafs n -- getMerkleCoPath leafs m
-        l                              = getDepositPath treeSize n -- replicate treeSize zero
+        coPath                         = getMerkleCoPath leafs n         -- getMerkleCoPath leafs m
+        l                              = getDepositPath treeSize n       -- replicate treeSize zero
         root                           = last coPath
 
         publicOutputWires = replicate 5 zero
@@ -108,6 +100,7 @@ CP (Zp 2958231612095078888336879513688146191837961411207746839537816952165238111
 ]
     }
 
+-- This is just a test value. The actual secret was destroyed in the process.
 withdrawSecret :: ZKSetupSecret
 withdrawSecret = ZKSetupSecret
   {
