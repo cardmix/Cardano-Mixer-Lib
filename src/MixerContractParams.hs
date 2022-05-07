@@ -32,9 +32,9 @@ data DepositParams = DepositParams
 -- Parameters for the "withdraw" endpoint
 data WithdrawParams = WithdrawParams
     {
+        wpAddress       :: !Text,
         wpValue         :: !Value,
         wpDepositNum    :: !(Integer, Integer),
-        wpAddress       :: !Text,
         wpPublicInputs  :: ![Fr],
         wpProof         :: !Proof
     }
