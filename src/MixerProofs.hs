@@ -8,7 +8,10 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module MixerProofs (generateWithdrawProof, generateSimulatedWithdrawProof, verifyWithdraw, computeWithdrawWires, withdrawSecret, withdrawCRS) where
+module MixerProofs (toWithdrawPublicSignals, fromWithdrawPublicSingals,
+                    isWithdrawPublicInputs, getWithdrawRootInput, getWithdrawPKHInput, getWithdrawKeyInput,
+                    generateWithdrawProof, generateSimulatedWithdrawProof,
+                    verifyWithdraw, withdrawSecret, withdrawCRS) where
 
 import           Data.Map                         (fromList)
 import           PlutusTx.Prelude                 hiding (Semigroup(..), (<$>), unless, mapMaybe, find, toList, fromInteger)
@@ -16,14 +19,35 @@ import           PlutusTx.Prelude                 hiding (Semigroup(..), (<$>), 
 import           Crypto
 import           MixerState
 import           MixerUserData
-import           Utils.Common                     (replicate, last, init)
+import           Utils.Common                     (replicate, last, init, drop)
 
 ------------------------------------ Withdraw Proof ---------------------------------------------------
 
--- TODO: use data types here
+-- Public signals manipulations
+
+toWithdrawPublicSignals :: PublicInputs -> PublicSignals
+toWithdrawPublicSignals (PublicInputs subs) = PublicSignals $ [one, zero, zero, zero, zero, zero] ++ subs
+
+fromWithdrawPublicSingals :: PublicSignals -> PublicInputs
+fromWithdrawPublicSingals (PublicSignals subs) = PublicInputs $ drop 6 subs
+
+isWithdrawPublicInputs :: PublicInputs -> Bool
+isWithdrawPublicInputs (PublicInputs subs) = length subs == 7
+
+getWithdrawRootInput :: PublicInputs -> Fr
+getWithdrawRootInput (PublicInputs subs) = head subs
+
+getWithdrawPKHInput :: PublicInputs -> Fr
+getWithdrawPKHInput (PublicInputs subs) = subs !! 1
+
+getWithdrawKeyInput :: PublicInputs -> Fr
+getWithdrawKeyInput (PublicInputs subs) = subs !! 2
+
+-- Proving algorithms
+
 generateWithdrawProof :: SetupArguments -> ReferenceString ->
-    ZKProofSecret -> Fr -> DepositSecret -> ShieldedAccountSecret -> MixerState -> ((Integer, Integer), [Fr], Proof)
-generateWithdrawProof sa@(SetupArguments r1cs _) crs secret pkh ds sas state = (lastDeposit, insPub, prove secret pa)
+    ZKProofSecret -> Fr -> DepositSecret -> ShieldedAccountSecret -> MixerState -> ((Integer, Integer), PublicInputs, Proof)
+generateWithdrawProof sa@(SetupArguments r1cs _) crs secret pkh ds sas state = (lastDeposit, PublicInputs insPub, prove secret pa)
     where
         (lastDeposit, _, insPub, insPriv) = computeWithdrawWires pkh ds sas state
         -- constructing witness
@@ -31,15 +55,15 @@ generateWithdrawProof sa@(SetupArguments r1cs _) crs secret pkh ds sas state = (
         sol = solveR1CS r1cs w
         pa = ProveArguments sa crs sol
 
-generateSimulatedWithdrawProof :: ZKProofSecret -> Fr -> DepositSecret -> ShieldedAccountSecret -> MixerState -> ((Integer, Integer), [Fr], Proof)
-generateSimulatedWithdrawProof secret pkh ds sas state = (lastDeposit, insPub, proof)
+generateSimulatedWithdrawProof :: ZKProofSecret -> Fr -> DepositSecret -> ShieldedAccountSecret -> MixerState -> ((Integer, Integer), PublicInputs, Proof)
+generateSimulatedWithdrawProof secret pkh ds sas state = (lastDeposit, PublicInputs insPub, proof)
     where
         (lastDeposit, outs, insPub, _) = computeWithdrawWires pkh ds sas state
-        subs = [one] ++ outs ++ insPub
+        subs = PublicSignals $ [one] ++ outs ++ insPub
         proof = simulate withdrawSecret secret withdrawCRS subs
 
 {-# INLINABLE verifyWithdraw #-}
-verifyWithdraw :: [Fr] -> Proof -> Bool
+verifyWithdraw :: PublicSignals -> Proof -> Bool
 verifyWithdraw = verify withdrawCRS
 
 computeWithdrawWires :: Fr -> DepositSecret -> ShieldedAccountSecret -> MixerState -> ((Integer, Integer), [Fr], [Fr], [Fr])

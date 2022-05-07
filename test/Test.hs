@@ -14,7 +14,6 @@ module Test where
 
 import           Data.Aeson                        (decode)
 import           Data.ByteString.Lazy              (readFile)
-import           Data.Map                          (fromList)
 import           Data.Maybe                        (fromMaybe)
 import           Prelude                           hiding (readFile)
 import           System.CPUTime                    (getCPUTime)
@@ -44,26 +43,19 @@ testMixerState :: MixerState
 testMixerState = [MerkleTree 1 $ padToPowerOfTwo 10 [testLeaf]]
 
 prop_CorrectProof :: ZKProofSecret -> Bool
-prop_CorrectProof secret =
-    let (_, outs, insPub, _) = computeWithdrawWires testPKH testDepositSecret testShieldedAccountSecret testMixerState
-        subs = [Zp 1] ++ outs ++ insPub
-        proof = simulate withdrawSecret secret withdrawCRS subs
-    in verifyWithdraw subs proof
+prop_CorrectProof secret = 
+    let (_, pubIns, proof) = generateSimulatedWithdrawProof secret testPKH testDepositSecret testShieldedAccountSecret testMixerState
+    in verifyWithdraw (toWithdrawPublicSignals pubIns) proof
 
 test_Prove :: IO ()
 test_Prove = do
     t0 <- getCPUTime
+    secret <- generateProofSecret
     (r1cs, wires) <- loadR1CSFile "r1cs.json"
     crs <- fromMaybe emptyCRS . decode <$> readFile "crs.json"
     let sa = SetupArguments r1cs wires
-        (_, _, insPub, insPriv) = computeWithdrawWires testPKH testDepositSecret testShieldedAccountSecret testMixerState
-    -- constructing witness
-    let w  = fromList $ zip ((0 :: Integer) : [6..37])
-            ([Zp 1] ++ insPub ++ insPriv)
-        sol = solveR1CS r1cs w
-        pa = ProveArguments sa crs sol
+        (_, _, proof) = generateWithdrawProof sa crs secret testPKH testDepositSecret testShieldedAccountSecret testMixerState
+    print proof
     t1 <- getCPUTime
     print $ (fromIntegral (t1 - t0) :: Double) / 10^(12 :: Integer)
-    secret <- generateProofSecret
-    let proof = prove secret pa
-    print proof
+    

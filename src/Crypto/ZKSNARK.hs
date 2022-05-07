@@ -94,6 +94,14 @@ instance Arbitrary ZKProofSecret where
 
 data ProveArguments = ProveArguments SetupArguments ReferenceString Assignment
 
+newtype PublicInputs = PublicInputs [Fr]
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
+newtype PublicSignals = PublicSignals [Fr]
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
 data Proof = Proof (CurvePoint T1) (CurvePoint T2) (CurvePoint T1)
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
@@ -104,7 +112,7 @@ instance Arbitrary Proof where
 
 -- Verify
 
-data VerifyArguments = VerifyArguments ReducedReferenceString [Fr] Proof
+data VerifyArguments = VerifyArguments ReducedReferenceString PublicSignals Proof
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
@@ -167,8 +175,8 @@ prove (ZKProofSecret r s) (ProveArguments (SetupArguments r1cs (Wires l _ _)) cr
          mul a' s <> mul b' r <> mul (refGd crs) (r * s)
     proof = Proof a b c
 
-simulate :: ZKSetupSecret -> ZKProofSecret -> ReducedReferenceString -> [Fr] -> Proof
-simulate (ZKSetupSecret sa sb sg sd _) (ZKProofSecret r s) crs subs = proof
+simulate :: ZKSetupSecret -> ZKProofSecret -> ReducedReferenceString -> PublicSignals -> Proof
+simulate (ZKSetupSecret sa sb sg sd _) (ZKProofSecret r s) crs (PublicSignals subs) = proof
   where
     g = mconcat (zipWith mul (refRedGpub crs) subs)
     a = mul gen r
@@ -177,8 +185,8 @@ simulate (ZKSetupSecret sa sb sg sd _) (ZKProofSecret r s) crs subs = proof
     proof = Proof a b c
 
 {-# INLINABLE verify #-}
-verify :: ReducedReferenceString -> [Fr] -> Proof -> Bool
-verify crs subs (Proof a b c) = lhs == rhs
+verify :: ReducedReferenceString -> PublicSignals -> Proof -> Bool
+verify crs (PublicSignals subs) (Proof a b c) = lhs == rhs
   where
     g = mconcat (zipWith mul (refRedGpub crs) subs)
     lhs = pairing a b

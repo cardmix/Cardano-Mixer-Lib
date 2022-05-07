@@ -35,7 +35,7 @@ data WithdrawParams = WithdrawParams
         wpAddress       :: !Text,
         wpValue         :: !Value,
         wpDepositNum    :: !(Integer, Integer),
-        wpPublicInputs  :: ![Fr],
+        wpPublicInputs  :: !PublicInputs,
         wpProof         :: !Proof
     }
     deriving stock (Show, Generic)

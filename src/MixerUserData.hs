@@ -57,5 +57,3 @@ generateShieldedAccountSecret = ShieldedAccountSecret <$> generateFr <*> generat
 
 
 
-
-
