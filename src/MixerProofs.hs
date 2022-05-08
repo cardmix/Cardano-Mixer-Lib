@@ -8,10 +8,7 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module MixerProofs (toWithdrawPublicSignals, fromWithdrawPublicSingals,
-                    isWithdrawPublicInputs, getWithdrawRootInput, getWithdrawPKHInput, getWithdrawKeyInput,
-                    generateWithdrawProof, generateSimulatedWithdrawProof,
-                    verifyWithdraw, withdrawSecret, withdrawCRS) where
+module MixerProofs where
 
 import           Data.Map                         (fromList)
 import           PlutusTx.Prelude                 hiding (Semigroup(..), (<$>), unless, mapMaybe, find, toList, fromInteger)
