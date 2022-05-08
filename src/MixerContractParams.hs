@@ -7,7 +7,7 @@
 {-# LANGUAGE TypeFamilies       #-}
 
 
-module MixerContractParams where
+module MixerContractParams (DepositParams(..), WithdrawParams(..), Value(..)) where
 
 import           Data.Aeson                          (FromJSON(..), ToJSON(..))
 import           Data.Text                           (Text)
