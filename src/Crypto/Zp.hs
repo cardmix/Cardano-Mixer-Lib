@@ -18,6 +18,7 @@ import           GHC.Generics                      (Generic)
 import           PlutusTx.Prelude
 import           Prelude                           (Show)
 import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
+import           Utils.Common                      (ToIntegerData (..))
 
 ------------------------- Finite Field -----------------------------
 
@@ -85,5 +86,5 @@ instance forall p. FiniteField p => Eq (Zp p) where
     {-# INLINABLE (==) #-}
     (==) (Zp a) (Zp b) = 0 == modulo (a - b) (fieldPrime (mempty :: p))
 
-
-
+instance ToIntegerData (Zp p) where
+    toIntegerData (Zp a) = [a]

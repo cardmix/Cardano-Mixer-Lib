@@ -17,6 +17,9 @@ import           Data.List                         (unzip)
 import           PlutusTx.Builtins                 (subtractInteger)
 import           PlutusTx.Prelude                  hiding ((<>))
 
+class ToIntegerData a where
+    toIntegerData :: a -> [Integer]
+
 --------------------------------- Lists -------------------------------------
 
 {-# INLINABLE init #-}

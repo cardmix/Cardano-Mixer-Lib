@@ -20,6 +20,7 @@ import           Prelude                           (Show)
 import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
 
 import           Crypto.Zp                         (Zp, fromZp)
+import           Utils.Common                      (ToIntegerData (..))
 
 class (Ring t, Group t, Eq t) => EllipticCurve t where
     aCurveCoef :: t
@@ -156,3 +157,7 @@ fromJ :: EllipticCurve t => (t, t, t) -> CurvePoint t
 fromJ (x, y, z)
           | z == zero = O
           | otherwise = let zz = z * z in CP (x * inv zz) (y * inv (z * zz))
+
+instance (EllipticCurve t, ToIntegerData t) => ToIntegerData (CurvePoint t) where
+  toIntegerData cp = toIntegerData x ++ toIntegerData y ++ toIntegerData z
+    where (x, y, z) = toJ cp

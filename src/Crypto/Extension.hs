@@ -22,6 +22,7 @@ import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitr
 
 import           Crypto.Polynomial
 import           Crypto.Zp                         (Zp, FiniteField(..))
+import           Utils.Common                      (ToIntegerData (..))
 
 ------------------------- Extension -------------------------------------
 
@@ -173,3 +174,6 @@ powUnitary :: (IsExtension t, IrreducibleMonic t e) => Extension t e -> Integer 
 powUnitary x n
             | n < 0     = pow (conj x) (negate n)
             | otherwise = pow x n
+
+instance ToIntegerData t => ToIntegerData (Extension t e) where
+    toIntegerData (E p) = toIntegerData p

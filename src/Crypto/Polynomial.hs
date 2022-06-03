@@ -152,3 +152,6 @@ removeZeroTerms (P p)
                     | p == []        = P []
                     | last p == zero = removeZeroTerms (P $ init p)
                     | otherwise      = P p
+
+instance ToIntegerData t => ToIntegerData (Polynomial t) where
+    toIntegerData (P lst) = concatMap toIntegerData lst

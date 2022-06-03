@@ -26,7 +26,7 @@ import           Crypto.Curve                      (CurvePoint (..), EllipticCur
 import           Crypto.DFT
 import           Crypto.Extension                  (pow)
 import           Crypto.R1CS                       (R1CS, Wires(..), Assignment, getR1CSPolynomials)
-import           Utils.Common                      (replicate)
+import           Utils.Common                      (ToIntegerData(..), replicate)
 
 ----------------------- ZKSNARK data types ---------------------------
 
@@ -109,6 +109,9 @@ data Proof = Proof (CurvePoint T1) (CurvePoint T2) (CurvePoint T1)
 instance Arbitrary Proof where
   {-# INLINABLE arbitrary #-}
   arbitrary = genericArbitrary
+
+instance ToIntegerData Proof where
+  toIntegerData (Proof cp1 cp2 cp3) = toIntegerData cp1 ++ toIntegerData cp2 ++ toIntegerData cp3
 
 -- Verify
 
