@@ -34,8 +34,8 @@ isWithdrawPublicInputs (PublicInputs subs) = length subs == 7
 getWithdrawRootInput :: PublicInputs -> Fr
 getWithdrawRootInput (PublicInputs subs) = head subs
 
-getWithdrawPKHInput :: PublicInputs -> Fr
-getWithdrawPKHInput (PublicInputs subs) = subs !! 1
+getWithdrawAddressInput :: PublicInputs -> Fr
+getWithdrawAddressInput (PublicInputs subs) = subs !! 1
 
 getWithdrawKeyInput :: PublicInputs -> Fr
 getWithdrawKeyInput (PublicInputs subs) = subs !! 2
