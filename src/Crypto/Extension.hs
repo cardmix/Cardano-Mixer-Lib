@@ -59,8 +59,8 @@ instance (IsExtension t, IrreducibleMonic t e) => IsExtension (Extension t e) wh
     frob x@(E p) = case frobenius (unPoly p) (unPoly $ poly (mempty :: e)) of
         Just q  -> E $ toPoly q
         Nothing -> pow x $ char x
-        -- pow x $ char x
 
+{-# INLINABLE frobenius #-}
 frobenius :: (IsExtension t) => [t] -> [t] -> Maybe [t]
 frobenius [] _ = Just []
 frobenius [a] _ = Just [frob a]
