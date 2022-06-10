@@ -12,7 +12,7 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module Crypto.Polynomial (Polynomial(..), degPoly, leading, unPoly, toPoly, fromConst, qr, remainderPoly, monomialMultiply, removeZeroTerms) where
+module Crypto.Polynomial where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
@@ -153,5 +153,6 @@ removeZeroTerms (P p)
                     | last p == zero = removeZeroTerms (P $ init p)
                     | otherwise      = P p
 
-instance ToIntegerData t => ToIntegerData (Polynomial t) where
-    toIntegerData (P lst) = concatMap toIntegerData lst
+{-# INLINABLE polyToIntegerData #-}
+polyToIntegerData :: ToIntegerData t => Polynomial t -> [Integer]
+polyToIntegerData (P lst) = concatMap toIntegerData lst
