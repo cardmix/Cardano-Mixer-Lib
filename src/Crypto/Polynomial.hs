@@ -153,6 +153,6 @@ removeZeroTerms (P p)
                     | last p == zero = removeZeroTerms (P $ init p)
                     | otherwise      = P p
 
-{-# INLINABLE polyToIntegerData #-}
-polyToIntegerData :: ToIntegerData t => Polynomial t -> [Integer]
-polyToIntegerData (P lst) = concatMap toIntegerData lst
+instance ToIntegerData t => ToIntegerData (Polynomial t) where
+    {-# INLINABLE toIntegerData #-}
+    toIntegerData (P lst) = concatMap toIntegerData lst
