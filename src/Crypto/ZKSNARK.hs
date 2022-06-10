@@ -111,6 +111,7 @@ instance Arbitrary Proof where
   arbitrary = genericArbitrary
 
 instance ToIntegerData Proof where
+  {-# INLINABLE toIntegerData #-}
   toIntegerData (Proof cp1 cp2 cp3) = toIntegerData cp1 ++ toIntegerData cp2 ++ toIntegerData cp3
 
 -- Verify
