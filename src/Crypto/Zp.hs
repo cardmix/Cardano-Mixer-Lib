@@ -87,4 +87,5 @@ instance forall p. FiniteField p => Eq (Zp p) where
     (==) (Zp a) (Zp b) = 0 == modulo (a - b) (fieldPrime (mempty :: p))
 
 instance ToIntegerData (Zp p) where
+    {-# INLINABLE toIntegerData #-}
     toIntegerData (Zp a) = [a]

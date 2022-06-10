@@ -176,4 +176,5 @@ powUnitary x n
             | otherwise = pow x n
 
 instance ToIntegerData t => ToIntegerData (Extension t e) where
-    toIntegerData (E p) = polyToIntegerData p
+    {-# INLINABLE toIntegerData #-}
+    toIntegerData (E p) = toIntegerData p

@@ -159,5 +159,6 @@ fromJ (x, y, z)
           | otherwise = let zz = z * z in CP (x * inv zz) (y * inv (z * zz))
 
 instance (EllipticCurve t, ToIntegerData t) => ToIntegerData (CurvePoint t) where
+  {-# INLINABLE toIntegerData #-}
   toIntegerData cp = toIntegerData x ++ toIntegerData y ++ toIntegerData z
     where (x, y, z) = toJ cp
