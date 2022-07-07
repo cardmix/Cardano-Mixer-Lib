@@ -17,6 +17,7 @@ import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
 import           PlutusTx.Prelude
 import           Prelude                           (Show)
+import qualified Prelude
 import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
 import           Utils.Common                      (ToIntegerData (..))
 
@@ -44,6 +45,9 @@ fromZp (Zp a) = a
 instance forall p. FiniteField p => Ord (Zp p) where
     {-# INLINABLE (<=) #-}
     (<=) (Zp a) (Zp b) = modulo a (fieldPrime (mempty :: p)) <= modulo b (fieldPrime (mempty :: p))
+
+instance forall p. FiniteField p => Prelude.Ord (Zp p) where
+    (<=) = (<=)
 
 instance forall p. FiniteField p => AdditiveSemigroup (Zp p) where
     {-# INLINABLE (+) #-}
@@ -85,6 +89,9 @@ instance forall p. FiniteField p => Group (Zp p) where
 instance forall p. FiniteField p => Eq (Zp p) where
     {-# INLINABLE (==) #-}
     (==) (Zp a) (Zp b) = 0 == modulo (a - b) (fieldPrime (mempty :: p))
+
+instance forall p. FiniteField p => Prelude.Eq (Zp p) where
+    (==) = (==)
 
 instance ToIntegerData (Zp p) where
     {-# INLINABLE toIntegerData #-}
