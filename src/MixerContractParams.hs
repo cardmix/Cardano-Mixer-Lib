@@ -9,7 +9,6 @@
 
 module MixerContractParams (DepositParams(..), WithdrawParams(..), Value(..), CurrencySymbol(..), TokenName(..)) where
 
-import           Data.Aeson                          (FromJSON(..), ToJSON(..))
 import           Data.Text                           (Text)
 import           GHC.Generics                        (Generic)
 import           Plutus.V1.Ledger.Value
@@ -27,7 +26,6 @@ data DepositParams = DepositParams
         dpLeaf           :: !Fr
     }
     deriving stock (Show, Generic)
-    deriving anyclass (FromJSON, ToJSON)
 
 -- Parameters for the "withdraw" endpoint
 data WithdrawParams = WithdrawParams
@@ -39,4 +37,3 @@ data WithdrawParams = WithdrawParams
         wpProof         :: !Proof
     }
     deriving stock (Show, Generic)
-    deriving anyclass (FromJSON, ToJSON)
