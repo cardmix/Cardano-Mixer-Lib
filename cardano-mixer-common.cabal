@@ -110,6 +110,10 @@ library
       PlutusTx.These
       PlutusTx.Traversable
       PlutusTx.Utils
+    build-depends:
+      deepseq                                -any,
+      memory                                 -any,
+      prettyprinter                          -any
     hs-source-dirs: src plutus-code
   else
     build-depends:
