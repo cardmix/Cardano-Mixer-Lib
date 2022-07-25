@@ -72,6 +72,7 @@ library
     MixerProofs.Groth16
     MixerProofs.SigmaProtocol
     Utils.Common
+    Utils.Plutus
   build-depends:
     base                          >= 4.9 && < 5,
     aeson                                  -any,
