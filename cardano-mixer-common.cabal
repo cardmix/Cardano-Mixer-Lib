@@ -8,9 +8,15 @@ license-files:      LICENSE
 author:             Vladimir Sinyakov
 maintainer:         devteam@cardmix.io
 
+flag frontend
+    description:
+        Builds executables for the frontend.
+    default: False
+    manual:  True
+
 common lang
   default-language:   Haskell2010
-  if impl(ghcjs)
+  if flag(frontend)
   -- Language settings for the Reflex frontend
     default-extensions: 
       DeriveFoldable
@@ -76,7 +82,7 @@ library
     text                                   -any,
     generic-arbitrary                      -any,
     QuickCheck                             -any
-  if impl(ghcjs)
+  if flag(frontend)
     other-modules:
       Plutus.V1.Ledger.Value
       PlutusTx.Applicative
