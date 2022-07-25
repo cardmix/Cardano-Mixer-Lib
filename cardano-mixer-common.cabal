@@ -112,6 +112,7 @@ library
       PlutusTx.Utils
     build-depends:
       deepseq                                -any,
+      ghc-prim                               -any,
       memory                                 -any,
       prettyprinter                          -any
     hs-source-dirs: src plutus-code
