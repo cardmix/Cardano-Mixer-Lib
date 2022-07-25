@@ -82,7 +82,8 @@ library
       Crypto.Polynomial
       Crypto.Zp
       MixerContractParams
-      MixerProofs
+      MixerProofs.Groth16
+      MixerProofs.SigmaProtocol
       MixerState
       MixerUserData
       Utils.Common
@@ -143,7 +144,8 @@ library
       Crypto.Polynomial
       Crypto.Zp
       MixerContractParams
-      MixerProofs
+      MixerProofs.Groth16
+      MixerProofs.SigmaProtocol
       MixerState
       MixerUserData
       Utils.Common            

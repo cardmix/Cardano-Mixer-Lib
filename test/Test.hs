@@ -19,7 +19,7 @@ import           Prelude                           hiding (readFile)
 import           System.CPUTime                    (getCPUTime)
 
 import           Crypto
-import           MixerProofs
+import           MixerProofs.Groth16
 import           MixerState
 import           MixerUserData
 
