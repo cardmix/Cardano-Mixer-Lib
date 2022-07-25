@@ -8,21 +8,23 @@ license-files:      LICENSE
 author:             Vladimir Sinyakov
 maintainer:         devteam@cardmix.io
 
-flag defer-plugin-errors
-    description:
-        Defer errors from the plugin, useful for things like Haddock that can't handle it.
-    default: False
-    manual:  True
-
-flag frontend
-    description:
-        Builds executables for the frontend.
-    default: False
-    manual:  True
-
--- Plutus language settings
 common lang
-    default-language:   Haskell2010
+  default-language:   Haskell2010
+  if impl(ghcjs)
+  -- Language settings for the Reflex frontend
+    default-extensions: 
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveLift
+      DeriveTraversable
+      ExplicitForAll
+      GeneralizedNewtypeDeriving
+      NoImplicitPrelude
+      ScopedTypeVariables
+      StandaloneDeriving
+  else
+  -- Plutus language settings
     ghc-options:
       -fwarn-redundant-constraints
       -Wall
@@ -37,26 +39,7 @@ common lang
       -fno-omit-interface-pragmas
       -fno-specialise
       -fno-strictness
-      -fobject-code       
-    if flag(defer-plugin-errors)
-      ghc-options:
-        -fplugin-opt PlutusTx.Plugin:defer-errors
-
--- Language settings for the Reflex frontend
-common lang-frontend
-    default-language: Haskell2010
-    default-extensions: 
-      DeriveFoldable
-      DeriveFunctor
-      DeriveGeneric
-      DeriveLift
-      DeriveTraversable
-      ExplicitForAll
-      GeneralizedNewtypeDeriving
-      NoImplicitPrelude
-      ScopedTypeVariables
-      StandaloneDeriving
-                         
+      -fobject-code                     
     ghc-options:
       -Wall
       -Widentities
@@ -67,27 +50,34 @@ common lang-frontend
       -Wunused-packages
                   
 library
-  if flag(frontend)
-    import: lang-frontend
-    exposed-modules:
-      Crypto
-      Crypto.ZKSNARK
-      Crypto.R1CS
-      Crypto.MerkleTree
-      Crypto.MiMC
-      Crypto.DFT
-      Crypto.BLS12381
-      Crypto.Curve
-      Crypto.Extension
-      Crypto.Polynomial
-      Crypto.Zp
-      MixerContractParams
-      MixerProofs.Groth16
-      MixerProofs.SigmaProtocol
-      MixerState
-      MixerUserData
-      Utils.Common
-    other-modules: 
+  import: lang
+  exposed-modules:
+    Crypto
+    Crypto.ZKSNARK
+    Crypto.R1CS
+    Crypto.MerkleTree
+    Crypto.MiMC
+    Crypto.DFT
+    Crypto.BLS12381
+    Crypto.Curve
+    Crypto.Extension
+    Crypto.Polynomial
+    Crypto.Zp
+    MixerProofs.Groth16
+    MixerProofs.SigmaProtocol
+    Utils.Common
+  build-depends:
+    base                          >= 4.9 && < 5,
+    aeson                                  -any,
+    bytestring                             -any,
+    containers                             -any,
+    extra                                  -any,
+    random                                 -any,
+    text                                   -any,
+    generic-arbitrary                      -any,
+    QuickCheck                             -any
+  if impl(ghcjs)
+    other-modules:
       Plutus.V1.Ledger.Value
       PlutusTx.Applicative
       PlutusTx.Base
@@ -114,75 +104,11 @@ library
       PlutusTx.These
       PlutusTx.Traversable
       PlutusTx.Utils
-    build-depends:
-      base                          >= 4.7 && < 5,
-      aeson                                  -any,
-      bytestring                             -any,
-      containers                             -any,
-      deepseq                                -any,
-      extra                                  -any,
-      generic-arbitrary                      -any,
-      ghc-prim                               -any,
-      memory                                 -any,
-      prettyprinter                          -any,
-      QuickCheck                             -any,
-      random                                 -any,
-      text                                   -any
     hs-source-dirs: src plutus-code
   else
-    import: lang
-    exposed-modules:
-      Crypto
-      Crypto.ZKSNARK
-      Crypto.R1CS
-      Crypto.MerkleTree
-      Crypto.MiMC
-      Crypto.DFT
-      Crypto.BLS12381
-      Crypto.Curve
-      Crypto.Extension
-      Crypto.Polynomial
-      Crypto.Zp
-      MixerContractParams
-      MixerProofs.Groth16
-      MixerProofs.SigmaProtocol
-      MixerState
-      MixerUserData
-      Utils.Common            
     build-depends:
-      base                          >= 4.9 && < 5,
-      aeson                                  -any,
-      bytestring                             -any,
-      containers                             -any,
-      data-default                           -any,
-      extra                                  -any,
-      freer-extras                           -any,
-      freer-simple                           -any,
-      flat                                   -any,
-      lens                                   -any,
-      mtl                                    -any,
-      openapi3                               -any,
-      playground-common                      -any,
-      plutus-contract                        -any,
-      plutus-core                            -any,
-      plutus-chain-index                     -any,
-      plutus-chain-index-core                -any,
-      plutus-pab                             -any,
-      plutus-tx-plugin                       -any,
       plutus-tx                              -any,
-      plutus-ledger                          -any,
-      plutus-ledger-api                      -any,
-      plutus-ledger-constraints              -any,
-      plutus-use-cases                       -any,
-      purescript-bridge                      -any,
-      random                                 -any,
-      req                                    -any,
-      serialise                              -any,
-      text                                   -any,
-      generic-arbitrary                      -any,
-      prettyprinter                          -any,
-      QuickCheck                             -any,
-      uuid                                   -any
+      plutus-ledger-api                      -any
     hs-source-dirs: src
 
 test-suite crypto-test

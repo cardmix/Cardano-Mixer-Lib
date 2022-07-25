@@ -20,9 +20,6 @@ import           System.CPUTime                    (getCPUTime)
 
 import           Crypto
 import           MixerProofs.Groth16
-import           MixerState
-import           MixerUserData
-
 
 testPKH :: Fr
 testPKH = Zp 20854110061193685199434827674222213664635638209565180150857366727406

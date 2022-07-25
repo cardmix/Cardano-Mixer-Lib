@@ -7,16 +7,96 @@
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeFamilies               #-}
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 module MixerProofs.Groth16 where
 
+import           Data.Aeson                       (FromJSON, ToJSON)
 import           Data.Map                         (fromList)
-import           PlutusTx.Prelude                 hiding (Semigroup(..), (<$>), unless, mapMaybe, find, toList, fromInteger)
+import           Data.Text                        (Text, unpack)
+import           GHC.Generics                     (Generic)
+import           Plutus.V1.Ledger.Value           (Value)
+import           PlutusTx.Prelude                 hiding (Semigroup(..), (<$>), (<*>), unless, mapMaybe, find, toList, fromInteger)
+import           Prelude                          (Show (..), IO, (<$>), (<*>), (^))
+import           Text.Read                        (readMaybe)
 
 import           Crypto
-import           MixerState
-import           MixerUserData
 import           Utils.Common                     (replicate, last, init, drop)
+
+
+-------------------------------------- User Data ------------------------------------------------------
+
+data DepositSecret = DepositSecret
+    {
+        getR1 :: Fr,
+        getR2 :: Fr
+    } deriving (Generic, FromJSON, ToJSON)
+
+instance Show DepositSecret where
+    show (DepositSecret r1 r2) = show $ fromZp r1 * fieldPrime R + fromZp r2
+
+readDepositSecret :: Text -> Maybe DepositSecret
+readDepositSecret str = do
+        n <- readMaybe (unpack str) :: Maybe Integer
+        let (r1, r2) = divMod n (fieldPrime R)
+        return $ DepositSecret (toZp r1) (toZp r2)
+
+generateDepositSecret :: IO DepositSecret
+generateDepositSecret = DepositSecret <$> generateFr <*> generateFr
+
+data ShieldedAccountSecret = ShieldedAccountSecret
+    {
+        getV1 :: Fr,
+        getV2 :: Fr,
+        getV3 :: Fr
+    } deriving (Show, Generic, FromJSON, ToJSON)
+
+generateShieldedAccountSecret :: IO ShieldedAccountSecret
+generateShieldedAccountSecret = ShieldedAccountSecret <$> generateFr <*> generateFr <*> generateFr
+
+data WithdrawParams = WithdrawParams
+    {
+        wpAddress       :: !Text,
+        wpValue         :: !Value,
+        wpDepositNum    :: !(Integer, Integer),
+        wpPublicInputs  :: !PublicInputs,
+        wpProof         :: !Proof
+    }
+    deriving stock (Show, Generic)
+
+---------------------------------------- Mixer State ---------------------------------------------------
+
+treeSize :: Integer
+treeSize = 10
+
+data MerkleTree = MerkleTree Integer [Fr]
+    deriving (Show, Generic, ToJSON, FromJSON)
+type MixerState = [MerkleTree]
+
+getMerkleLeafNumber :: MixerState -> Fr -> Maybe (Integer, Integer)
+getMerkleLeafNumber state leaf = do
+        k <- nTree state
+        m <- nDep $ state !! k
+        return (k, m + 1)
+    where nDep  (MerkleTree _ tree) = findIndex (leaf ==) tree
+          nTree s                   = findIndex ((/=) Nothing . nDep) s
+
+getMerkleTree :: MixerState -> (Integer, Integer) -> Maybe MerkleTree
+getMerkleTree state (k, m) = do
+    MerkleTree _ tree <- if length state <= k
+                            then Nothing
+                            else Just $ state !! k
+    if 1 > m || m > 2^treeSize
+        then Nothing
+        else Just $ MerkleTree m $ padToPowerOfTwo treeSize $ take m tree
+
+constructStateFromList :: ([Fr], MixerState) -> ([Fr], MixerState)
+constructStateFromList ([], state)  = ([], state)
+constructStateFromList (lst, state) = constructStateFromList (drop (2 ^ treeSize) lst, state ++ [MerkleTree n tree'])
+    where tree  = take (2 ^ treeSize) lst
+          tree' = padToPowerOfTwo treeSize tree
+          n     = length tree
 
 ------------------------------------ Withdraw Proof ---------------------------------------------------
 
