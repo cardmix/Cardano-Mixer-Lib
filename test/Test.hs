@@ -14,12 +14,16 @@ module Test where
 
 import           Data.Aeson                        (decode)
 import           Data.ByteString.Lazy              (readFile)
+import           Data.List                         (nub)
+import qualified Data.Map
 import           Data.Maybe                        (fromMaybe)
 import           Prelude                           hiding (readFile)
 import           System.CPUTime                    (getCPUTime)
 
 import           Crypto
 import           MixerProofs.Groth16
+import           MixerProofs.SigmaProtocol
+
 
 testPKH :: Fr
 testPKH = Zp 20854110061193685199434827674222213664635638209565180150857366727406
@@ -40,7 +44,7 @@ testMixerState :: MixerState
 testMixerState = [MerkleTree 1 $ padToPowerOfTwo 10 [testLeaf]]
 
 prop_CorrectProof :: ZKProofSecret -> Bool
-prop_CorrectProof secret = 
+prop_CorrectProof secret =
     let (_, pubIns, proof) = generateSimulatedWithdrawProof secret testPKH testDepositSecret testShieldedAccountSecret testMixerState
     in verifyWithdraw (toWithdrawPublicSignals pubIns) proof
 
@@ -55,4 +59,22 @@ test_Prove = do
     print proof
     t1 <- getCPUTime
     print $ (fromIntegral (t1 - t0) :: Double) / 10^(12 :: Integer)
-    
+
+------------------------------------------------------ Test Sigma Protocol ---------------------------------------------------
+
+prop_CorrectSPProof :: ([(Integer, (Integer, Integer))], Integer) -> Bool
+prop_CorrectSPProof ([], _)  = True
+prop_CorrectSPProof (lst, a) = sigmaProtocolVerify testGens spi spp
+    where
+        lst' = Data.Map.toList $ Data.Map.fromList lst
+        (_, g1, _, _) = testGens
+
+        secrets = map (\(s, (_, _)) -> toZp s) lst' :: [ExpField]
+        fakeEs  = map (\(_, (e, _)) -> toZp e) lst' :: [ExpField]
+        fakeXs  = map (\(_, (_, x)) -> toZp x) lst' :: [ExpField]
+        keys    = map (pow g1 . fromZp) secrets
+
+        secret  = minimum secrets
+        addr    = toZp a :: ExpField
+
+        (spi@(leafs, key, addrExp, _), spp@(commit@(as, bs, cs), es, xs)) = sigmaProtocolProve testGens (keys, fakeEs, fakeXs, secret, addr)

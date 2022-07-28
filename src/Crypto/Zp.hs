@@ -11,14 +11,16 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module Crypto.Zp (Zp(..), FiniteField(..), toZp, fromZp) where
+module Crypto.Zp (Zp(..), FiniteField(..), toZp, fromZp, generateZp) where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
 import           PlutusTx.Prelude
-import           Prelude                           (Show)
+import           Prelude                           (Show, IO)
 import qualified Prelude
+import           System.Random                     (randomRIO)
 import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
+
 import           Utils.Common                      (ToIntegerData (..))
 
 ------------------------- Finite Field -----------------------------
@@ -41,6 +43,9 @@ toZp a = Zp $ modulo a (fieldPrime (mempty :: p))
 {-# INLINABLE fromZp #-}
 fromZp ::Zp p -> Integer
 fromZp (Zp a) = a
+
+generateZp :: forall p . FiniteField p => IO (Zp p)
+generateZp = toZp Prelude.<$> (randomRIO (0, fieldPrime (mempty :: p) - 1) :: IO Integer)
 
 instance forall p. FiniteField p => Ord (Zp p) where
     {-# INLINABLE (<=) #-}

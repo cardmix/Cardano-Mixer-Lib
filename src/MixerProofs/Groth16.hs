@@ -24,7 +24,6 @@ import           Text.Read                        (readMaybe)
 import           Crypto
 import           Utils.Common                     (replicate, last, init, drop)
 
-
 -------------------------------------- User Data ------------------------------------------------------
 
 data DepositSecret = DepositSecret
@@ -43,7 +42,7 @@ readDepositSecret str = do
         return $ DepositSecret (toZp r1) (toZp r2)
 
 generateDepositSecret :: IO DepositSecret
-generateDepositSecret = DepositSecret <$> generateFr <*> generateFr
+generateDepositSecret = DepositSecret <$> generateZp <*> generateZp
 
 data ShieldedAccountSecret = ShieldedAccountSecret
     {
@@ -53,7 +52,7 @@ data ShieldedAccountSecret = ShieldedAccountSecret
     } deriving (Show, Generic, FromJSON, ToJSON)
 
 generateShieldedAccountSecret :: IO ShieldedAccountSecret
-generateShieldedAccountSecret = ShieldedAccountSecret <$> generateFr <*> generateFr <*> generateFr
+generateShieldedAccountSecret = ShieldedAccountSecret <$> generateZp <*> generateZp <*> generateZp
 
 data WithdrawParams = WithdrawParams
     {

@@ -18,9 +18,7 @@ module Crypto.BLS12381 where
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
 import           PlutusTx.Prelude
-import           Prelude                           (Show, IO)
-import qualified Prelude                           ((<$>))
-import           System.Random                     (randomRIO)
+import           Prelude                           (Show)
 
 import           Crypto.Curve                      (CurvePoint(..), EllipticCurve(..))
 import           Crypto.Extension
@@ -63,10 +61,6 @@ type Fr = Zp R
 instance FiniteField R where
   {-# INLINABLE fieldPrime #-}
   fieldPrime = const 0x73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000001
-
-{-# INLINABLE generateFr #-}
-generateFr :: IO Fr
-generateFr = toZp Prelude.<$> (randomRIO (1, fieldPrime (mempty :: R) - 1) :: IO Integer)
 
 -- BLS12381
 type T1 = Zp Q

@@ -12,14 +12,16 @@
 module Main where
 
 import           Prelude
-import           System.CPUTime              (getCPUTime)
 import           Test.QuickCheck             (quickCheck)
 
-import           Test                        (prop_CorrectProof)
+import           Test                        
+
 
 main :: IO ()
 main = do
-    t0 <- getCPUTime
-    quickCheck prop_CorrectProof
-    t1 <- getCPUTime
-    print $ (fromIntegral (t1 - t0) :: Double) / 10^(12 :: Integer)
+    -- t0 <- getCPUTime
+    -- quickCheck prop_CorrectProof
+    -- t1 <- getCPUTime
+    -- print $ (fromIntegral (t1 - t0) :: Double) / 10^(12 :: Integer)
+
+    quickCheck prop_CorrectSPProof

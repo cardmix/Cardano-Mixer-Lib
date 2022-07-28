@@ -21,12 +21,14 @@ import           PlutusTx.Prelude                  hiding ((<$>), (<*>), toList,
 import           Prelude                           (Show (..), IO, (<$>), (<*>), FilePath, init, String, last, putStrLn, print)
 import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
 
-import           Crypto.BLS12381                   (Fr, T1, T2, pairing, generateFr)
+import           Crypto.BLS12381                   (Fr, T1, T2, pairing)
 import           Crypto.Curve                      (CurvePoint (..), EllipticCurve(..), mul)
 import           Crypto.DFT
 import           Crypto.Extension                  (pow)
 import           Crypto.R1CS                       (R1CS, Wires(..), Assignment, getR1CSPolynomials)
+import           Crypto.Zp                         (generateZp)
 import           Utils.Common                      (ToIntegerData(..), replicate)
+
 
 ----------------------- ZKSNARK data types ---------------------------
 
@@ -123,7 +125,7 @@ data VerifyArguments = VerifyArguments ReducedReferenceString PublicSignals Proo
 ---------------------- Generate Operations ---------------------------
 
 generateSetupSecret :: IO ZKSetupSecret
-generateSetupSecret = ZKSetupSecret <$> generateFr <*> generateFr <*> generateFr <*> generateFr <*> generateFr
+generateSetupSecret = ZKSetupSecret <$> generateZp <*> generateZp <*> generateZp <*> generateZp <*> generateZp
 
 generateCRS :: FilePath -> SetupArguments -> IO ()
 generateCRS fileCRS sa = do
@@ -137,7 +139,7 @@ generateCRS fileCRS sa = do
       putStrLn $ crsToHaskell redCRS
 
 generateProofSecret :: IO ZKProofSecret
-generateProofSecret = ZKProofSecret <$> generateFr <*> generateFr
+generateProofSecret = ZKProofSecret <$> generateZp <*> generateZp
 
 ---------------------- Groth's zk-SNARKs--------------------
 
