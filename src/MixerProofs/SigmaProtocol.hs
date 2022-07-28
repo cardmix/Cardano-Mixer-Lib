@@ -12,6 +12,7 @@
 module MixerProofs.SigmaProtocol where
 
 import           Data.Aeson                (FromJSON, ToJSON)
+import           Data.Text                 (Text)
 import           GHC.Generics              (Generic)
 import           PlutusTx.Prelude          hiding (mapM, (<$>))
 import           Prelude                   (IO, Show, mapM)
@@ -79,6 +80,17 @@ type SigmaProtocolGenerateProofInput = ([BaseField], ExpField, ExpField, Integer
 type SigmaProtocolRandomizeInput = ([BaseField], ExpField, Integer)
 
 type SigmaProtocolProveInput = ([BaseField], [ExpField], [ExpField], ExpField, ExpField)
+
+-- mixer instance hashes, deposit keys, used keys
+type KeysResponse = [(Integer, [BaseField], [BaseField])]
+
+data WithdrawRequest = WithdrawRequest
+  {
+    wrMixerInstanceHash  :: Integer,              -- mixre instance hash
+    wrSigmaProtocolInput :: SigmaProtocolInput,
+    wrSigmaProtocolProof :: SigmaProtocolProof,
+    wrWithdrawOption     :: Either Text BaseField -- either wallet address or the new deposit key
+  }
 
 ----------------------------------------- On-chain ---------------------------------------------
 
