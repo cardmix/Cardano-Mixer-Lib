@@ -91,6 +91,8 @@ data WithdrawRequest = WithdrawRequest
     wrSigmaProtocolProof :: SigmaProtocolProof,
     wrWithdrawOption     :: Either Text BaseField -- either wallet address or the new deposit key
   }
+  deriving stock (Show, Generic)
+  deriving anyclass (FromJSON, ToJSON) 
 
 ----------------------------------------- On-chain ---------------------------------------------
 
