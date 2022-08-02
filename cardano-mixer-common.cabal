@@ -58,7 +58,6 @@ common lang
 library
   import: lang
   exposed-modules:
-    API
     Crypto
     Crypto.ZKSNARK
     Crypto.R1CS
@@ -70,6 +69,7 @@ library
     Crypto.Extension
     Crypto.Polynomial
     Crypto.Zp
+    MixerAPI
     MixerProofs.Groth16
     MixerProofs.SigmaProtocol
     Utils.Common
