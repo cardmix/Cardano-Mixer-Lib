@@ -1,4 +1,6 @@
 {-# LANGUAGE DataKinds                  #-}
+{-# LANGUAGE DeriveAnyClass             #-}
+{-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE DerivingStrategies         #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
@@ -6,8 +8,6 @@
 {-# LANGUAGE NoImplicitPrelude          #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeFamilies               #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE DeriveAnyClass #-}
 
 module MixerProofs.SigmaProtocol where
 
@@ -86,7 +86,7 @@ type KeysResponse = [(Integer, [BaseField], [BaseField])]
 
 data WithdrawRequest = WithdrawRequest
   {
-    wrMixerInstanceHash  :: Integer,              -- mixre instance hash
+    wrMixerInstanceHash  :: Integer,              -- mixer instance hash
     wrSigmaProtocolInput :: SigmaProtocolInput,
     wrSigmaProtocolProof :: SigmaProtocolProof,
     wrWithdrawOption     :: Either Text BaseField -- either wallet address or the new deposit key

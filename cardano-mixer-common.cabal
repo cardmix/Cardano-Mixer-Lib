@@ -58,6 +58,7 @@ common lang
 library
   import: lang
   exposed-modules:
+    API
     Crypto
     Crypto.ZKSNARK
     Crypto.R1CS
@@ -79,10 +80,11 @@ library
     bytestring                             -any,
     containers                             -any,
     extra                                  -any,
-    random                                 -any,
-    text                                   -any,
     generic-arbitrary                      -any,
-    QuickCheck                             -any
+    QuickCheck                             -any,
+    random                                 -any,
+    servant                                -any,
+    text                                   -any
   if flag(frontend)
     other-modules:
       Plutus.V1.Ledger.Value
