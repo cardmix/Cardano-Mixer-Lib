@@ -12,14 +12,16 @@
 module MixerProofs.SigmaProtocol where
 
 import           Data.Aeson                (FromJSON, ToJSON)
+import           Data.Maybe                (catMaybes)
 import           Data.Text                 (Text)
 import           GHC.Generics              (Generic)
-import           PlutusTx.Prelude          hiding (mapM, (<$>))
-import           Prelude                   (IO, Show, mapM)
+import           PlutusTx.Prelude          hiding (mapM, (<$>), fmap)
+import           Prelude                   (IO, Show, mapM, undefined, fmap)
 import           System.Random             (randomRIO)
 
 import           Crypto
 import           Utils.Common              (drop)
+
 
 --------------------------------------- Finite Fields -------------------------------------------
 
@@ -61,7 +63,7 @@ instance FiniteField FExp where
 
 ------------------------------------------ Types ----------------------------------------------
 
--- leafs, key, addrExp, and addrValue
+-- deposit keys, withdraw key, addrExp, and addrValue
 type SigmaProtocolInput = ([BaseField], BaseField, BaseField, ExpField)
 
 -- triple of commitments
@@ -75,14 +77,15 @@ type SigmaProtocolGenerators = (BaseField, BaseField, BaseField, BaseField)
 testGens :: SigmaProtocolGenerators
 testGens = (Zp 100500, Zp 3, Zp 5, Zp 7)
 
-type SigmaProtocolGenerateProofInput = ([BaseField], ExpField, ExpField, Integer)
+-- secret, address, and number of alternative keys in the proof
+type SigmaProtocolGenerateProofInput = (ExpField, ExpField, Integer)
 
 type SigmaProtocolRandomizeInput = ([BaseField], ExpField, Integer)
 
 type SigmaProtocolProveInput = ([BaseField], [ExpField], [ExpField], ExpField, ExpField)
 
--- mixer instance hashes, deposit keys, used keys
-type KeysResponse = [(Integer, [BaseField], [BaseField])]
+-- mixer instance hashes, deposit keys, withdraw keys
+type KeysResponse = [((Integer, SigmaProtocolGenerators), [BaseField], [BaseField])]
 
 data WithdrawRequest = WithdrawRequest
   {
@@ -92,7 +95,7 @@ data WithdrawRequest = WithdrawRequest
     wrWithdrawOption     :: Either Text BaseField -- either wallet address or the new deposit key
   }
   deriving stock (Show, Generic)
-  deriving anyclass (FromJSON, ToJSON) 
+  deriving anyclass (FromJSON, ToJSON)
 
 ----------------------------------------- On-chain ---------------------------------------------
 
@@ -119,11 +122,23 @@ sigmaProtocolVerify gens@(_, g1, g2, g3) (leafs, key, addrExp, addr) (commit@(as
 
 ----------------------------------------- Off-chain --------------------------------------------
 
-sigmaProtocolGenerateProof :: SigmaProtocolGenerators -> SigmaProtocolGenerateProofInput -> IO (SigmaProtocolInput, SigmaProtocolProof)
-sigmaProtocolGenerateProof gens (keys, secret, addr, n) = do
-    (keys', es, xs) <- sigmaProtocolRandomize gens (keys, secret, n-1)
-    return $ sigmaProtocolProve gens (keys', es, xs, secret, addr)
+sigmaProtocolGenerateProof :: KeysResponse -> SigmaProtocolGenerateProofInput -> IO (Maybe WithdrawRequest)
+sigmaProtocolGenerateProof resp input = do
+  wrs <- fmap catMaybes $ mapM (`sigmaProtocolGenerateProof'` input) resp
+  if null wrs then return Nothing else return $ Just $ head wrs
 
+sigmaProtocolGenerateProof' :: ((Integer, SigmaProtocolGenerators), [BaseField], [BaseField]) -> SigmaProtocolGenerateProofInput
+  -> IO (Maybe WithdrawRequest)
+sigmaProtocolGenerateProof' ((miHash, gens@(_, g1, g2, _)), dKeys, wKeys) (secret, addr, n) = do
+    let dKey = pow g1 (fromZp secret)
+        wKey = pow g2 (fromZp secret)
+    if dKey `notElem` dKeys || wKey `elem` wKeys then return Nothing
+    else do
+      (keys', es, xs) <- sigmaProtocolRandomize gens (dKeys, secret, n-1)
+      let (spi, spp) = sigmaProtocolProve gens (keys', es, xs, secret, addr)
+      return $ Just $ WithdrawRequest miHash spi spp undefined
+
+-- TODO: SigmaProtocolProveInput could be incorrect!
 sigmaProtocolProve :: SigmaProtocolGenerators -> SigmaProtocolProveInput -> (SigmaProtocolInput, SigmaProtocolProof)
 sigmaProtocolProve gens@(_, g1, g2, g3) (keys, fakeEs, fakeXs, secret, addr) = (spi, spp)
     where
