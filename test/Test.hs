@@ -16,7 +16,7 @@ import           Data.Aeson                        (decode)
 import           Data.ByteString.Lazy              (readFile)
 import           Data.List                         (nub)
 import qualified Data.Map
-import           Data.Maybe                        (fromMaybe)
+import           Data.Maybe                        (fromMaybe, fromJust)
 import           Prelude                           hiding (readFile)
 import           System.CPUTime                    (getCPUTime)
 
@@ -77,4 +77,4 @@ prop_CorrectSPProof (lst, a) = sigmaProtocolVerify testGens spi spp
         secret  = minimum secrets
         addr    = toZp a :: ExpField
 
-        (spi@(leafs, key, addrExp, _), spp@(commit@(as, bs, cs), es, xs)) = sigmaProtocolProve testGens (keys, fakeEs, fakeXs, secret, addr)
+        (spi@(leafs, key, addrExp, _), spp@(commit@(as, bs, cs), es, xs)) = fromJust $ sigmaProtocolProve testGens (keys, fakeEs, fakeXs, secret, addr)

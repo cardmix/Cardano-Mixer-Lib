@@ -72,6 +72,10 @@ library
     MixerAPI
     MixerProofs.Groth16
     MixerProofs.SigmaProtocol
+    MixerProofs.SigmaProtocol.API
+    MixerProofs.SigmaProtocol.OffChain
+    MixerProofs.SigmaProtocol.OnChain
+    MixerProofs.SigmaProtocol.Types
     Utils.Common
     Utils.Plutus
   build-depends:
