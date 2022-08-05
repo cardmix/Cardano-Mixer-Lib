@@ -26,6 +26,8 @@ data MixerInstanceFrontend = MixerInstanceFrontend
   {
     mifGenerators             :: SigmaProtocolGenerators,
     mifCurrentDepositAddress  :: Text,
+    mifCurrentDepositNonADA   :: [(Text, Text, Text)],
+    mifCurrentDepositADA      :: Text,
     mifNextDeposit            :: Maybe Text
   }
   deriving stock (Eq, Show, Generic)
