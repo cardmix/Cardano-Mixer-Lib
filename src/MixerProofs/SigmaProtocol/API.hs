@@ -36,7 +36,9 @@ data MixerDepositInstanceFrontend = MixerDepositInstanceFrontend
     mdifGenerator              :: ExpField,
     mdifCurrentDepositAddress  :: Text,
     mdifCurrentDepositADA      :: Text,
-    mdifCurrentDepositNonADA   :: [(Text, Text, Text)]
+    mdifCurrentDepositNonADA   :: [(Text, Text, Text)],
+    mdifTokenName              :: Text,
+    mdifQuantity               :: Integer
   }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
