@@ -33,7 +33,7 @@ data MixerInstanceFrontend = MixerInstanceFrontend
 
 data MixerDepositInstanceFrontend = MixerDepositInstanceFrontend
   {
-    mdifGenerator              :: ExpField,
+    mdifGenerator              :: BaseField,
     mdifCurrentDepositAddress  :: Text,
     mdifCurrentDepositADA      :: Text,
     mdifCurrentDepositNonADA   :: [(Text, Text, Text)],
