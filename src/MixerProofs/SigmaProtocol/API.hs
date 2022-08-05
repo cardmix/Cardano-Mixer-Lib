@@ -24,11 +24,19 @@ import           MixerProofs.SigmaProtocol.Types
 
 data MixerInstanceFrontend = MixerInstanceFrontend
   {
+    mifHash                   :: Integer,
     mifGenerators             :: SigmaProtocolGenerators,
-    mifCurrentDepositAddress  :: Text,
-    mifCurrentDepositNonADA   :: [(Text, Text, Text)],
-    mifCurrentDepositADA      :: Text,
     mifNextDeposit            :: Maybe Text
+  }
+  deriving stock (Eq, Show, Generic)
+  deriving anyclass (FromJSON, ToJSON)
+
+data MixerDepositInstanceFrontend = MixerDepositInstanceFrontend
+  {
+    mdifGenerator              :: ExpField,
+    mdifCurrentDepositAddress  :: Text,
+    mdifCurrentDepositADA      :: Text,
+    mdifCurrentDepositNonADA   :: [(Text, Text, Text)]
   }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
