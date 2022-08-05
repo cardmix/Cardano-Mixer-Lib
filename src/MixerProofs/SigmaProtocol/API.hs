@@ -26,7 +26,7 @@ data MixerInstanceFrontend = MixerInstanceFrontend
   {
     mifHash                   :: Integer,
     mifGenerators             :: SigmaProtocolGenerators,
-    mifNextDeposit            :: Maybe Text
+    mifNextDeposit            :: Maybe Text,
     mifTokenName              :: Text,
     mifQuantity               :: Integer
   }
