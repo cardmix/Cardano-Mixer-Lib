@@ -27,6 +27,8 @@ data MixerInstanceFrontend = MixerInstanceFrontend
     mifHash                   :: Integer,
     mifGenerators             :: SigmaProtocolGenerators,
     mifNextDeposit            :: Maybe Text
+    mifTokenName              :: Text,
+    mifQuantity               :: Integer
   }
   deriving stock (Eq, Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
