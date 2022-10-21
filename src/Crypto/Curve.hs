@@ -11,7 +11,7 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module Crypto.Curve (CurvePoint(..), EllipticCurve(..), add, dbl, mul) where
+module Crypto.Curve (CurvePoint(..), EllipticCurve(..), add, dbl, mul, addJ, dblJ, mulJ, toJ, fromJ) where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
