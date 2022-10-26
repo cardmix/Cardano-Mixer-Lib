@@ -85,6 +85,7 @@ library
     containers                             -any,
     extra                                  -any,
     generic-arbitrary                      -any,
+    MonadRandom                            -any,
     QuickCheck                             -any,
     random                                 -any,
     servant                                -any,

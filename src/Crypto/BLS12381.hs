@@ -22,7 +22,7 @@ import           Prelude                           (Show)
 
 import           Crypto.Curve                      (CurvePoint(..), EllipticCurve(..))
 import           Crypto.Extension
-import           Crypto.Zp                         (Zp, FiniteField(..), toZp)
+import           Crypto.Zp                         (Zp (..), FiniteField(..), toZp)
 import           Crypto.Polynomial                 (toPoly)
 
 ----------------------------------- BLS12381 --------------------------------
@@ -67,6 +67,8 @@ type T1 = Zp Q
 instance EllipticCurve T1 where
     {-# INLINABLE aCurveCoef #-}
     aCurveCoef = zero
+    {-# INLINABLE bCurveCoef #-}
+    bCurveCoef = Zp 4
     {-# INLINABLE gen #-}
     gen = CP
       (toZp 0x17f1d3a73197d7942695638c4fa9ac0fc3688c4f9774b905a14e3a3f171bac586c55e83ff97a1aeffb3af00adb22c6bb)
@@ -77,6 +79,8 @@ type T2 = Extension T1 E2
 instance EllipticCurve T2 where
     {-# INLINABLE aCurveCoef #-}
     aCurveCoef = zero
+    {-# INLINABLE bCurveCoef #-}
+    bCurveCoef = E (toPoly [Zp 4, Zp 4])
     {-# INLINABLE gen #-}
     gen = CP
       (E (toPoly [ toZp 0x24aa2b2f08f0a91260805272dc51051c6e47ad4fa403b02b4510b647ae3d1770bac0326a805bbefd48056c8c121bdb8

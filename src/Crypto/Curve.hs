@@ -11,7 +11,7 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module Crypto.Curve (CurvePoint(..), EllipticCurve(..), add, dbl, mul, addJ, dblJ, mulJ, toJ, fromJ) where
+module Crypto.Curve (CurvePoint(..), EllipticCurve(..), add, dbl, mul, fromX, addJ, dblJ, mulJ, toJ, fromJ, fromXJ) where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
@@ -19,11 +19,13 @@ import           PlutusTx.Prelude
 import           Prelude                           (Show)
 import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
 
-import           Crypto.Zp                         (Zp, fromZp)
+import           Crypto.Zp                         (Zp, fromZp, FiniteField)
 import           Utils.Common                      (ToIntegerData (..))
+import Crypto.Extension (squareRoot)
 
 class (Ring t, Group t, Eq t) => EllipticCurve t where
     aCurveCoef :: t
+    bCurveCoef :: t
     gen        :: CurvePoint t
 
 data CurvePoint t = CP t t | O
@@ -83,6 +85,12 @@ dbl (CP x y)
 {-# INLINABLE mul #-}
 mul :: EllipticCurve t => CurvePoint t -> Zp p -> CurvePoint t
 mul p n = fromJ $ mulJ (toJ p) (fromZp n)      -- multiplication using Jacobian coordinates
+
+{-# INLINABLE fromX #-}
+fromX :: forall p. (FiniteField p, EllipticCurve (Zp p)) => Zp p -> Maybe (CurvePoint (Zp p))
+fromX x = do
+  y <- squareRoot $ (x * x + aCurveCoef) * x + bCurveCoef
+  pure $ CP x y
 
 --------------------- Jacobian coordinates -----------------------------
 
@@ -146,6 +154,12 @@ dblJ (x1, y1, z1)
     x3   = t
     y3   = m * (s - t) - eight * yyyy
     z3   = yz * yz - yy - zz
+
+{-# INLINABLE fromXJ #-}
+fromXJ :: forall p. (FiniteField p, EllipticCurve (Zp p)) => Zp p -> Maybe (Zp p, Zp p, Zp p)
+fromXJ x = do
+  y <- squareRoot $ (x * x + aCurveCoef) * x + bCurveCoef
+  pure (x, y, one)
 
 {-# INLINABLE toJ #-}
 toJ :: EllipticCurve t => CurvePoint t -> (t, t, t)

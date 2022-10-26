@@ -12,16 +12,18 @@
 {-# LANGUAGE ScopedTypeVariables        #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module Crypto.Extension (Extension(..), IsExtension(..), IrreducibleMonic(..), conj, pow, powUnitary, embed, embed2) where
+module Crypto.Extension (Extension(..), IsExtension(..), IrreducibleMonic(..), conj, pow, powUnitary, embed, embed2, squareRoot) where
 
+import           Control.Monad.Random              (runRand, getRandom)
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
 import           PlutusTx.Prelude
-import           Prelude                           (Show)
+import           Prelude                           (Show, (^))
+import           System.Random                     (StdGen, mkStdGen)
 import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
 
 import           Crypto.Polynomial
-import           Crypto.Zp                         (Zp, FiniteField(..))
+import           Crypto.Zp                         (Zp (..), FiniteField(..), toZp)
 import           Utils.Common                      (ToIntegerData (..))
 
 ------------------------- Extension -------------------------------------
@@ -178,3 +180,64 @@ powUnitary x n
 instance ToIntegerData t => ToIntegerData (Extension t e) where
     {-# INLINABLE toIntegerData #-}
     toIntegerData (E p) = toIntegerData p
+
+------------------------ Square root computation -------------------------------
+
+-- | Check if an element is a quadratic nonresidue.
+{-# INLINABLE isQNR #-}
+isQNR :: forall p. FiniteField p => Zp p -> Bool
+isQNR a = a == zero || char a /= 2 && pow a (divide (fieldPrime (mempty :: p)) 2) /= one
+
+-- Get a random quadratic nonresidue.
+{-# INLINABLE getQNR #-}
+getQNR :: forall p. FiniteField p => Maybe (Zp p)
+getQNR
+  | char (one :: Zp p) == 2 = Nothing
+  | otherwise               = Just $ toZp $ getQNR' $ runRand getRandom $ mkStdGen 0
+  where
+    getQNR' :: (Integer, StdGen) -> Integer
+    getQNR' (x, g)
+      | x /= zero && isQNR (toZp x :: Zp p) = x
+      | otherwise                           = getQNR' $ runRand getRandom g
+
+-- Factor the order @p - 1@ to get @q@ and @s@ such that @p - 1 = q2^s@.
+{-# INLINABLE factorOrder #-}
+factorOrder :: forall p. FiniteField p => p -> (Integer, Integer)
+factorOrder w = factorOrder' (fieldPrime w - 1, 0)
+  where
+    factorOrder' :: (Integer, Integer) -> (Integer, Integer)
+    factorOrder' qs@(q, s)
+      | modulo q 2 == 1 = qs
+      | otherwise       = factorOrder' (divide q 2, s + 1)
+
+-- Get a square root of @n@ with the Tonelli-Shanks algorithm.
+{-# INLINABLE squareRoot #-}
+squareRoot :: forall p. FiniteField p => Zp p -> Maybe (Zp p)
+squareRoot (Zp 0) = Just zero
+squareRoot n
+  | char n == 2   = Just $ power n
+  | isQNR n       = Nothing
+  | otherwise     = case (factorOrder (mempty :: p), getQNR) of
+  ((q, s), Just z) -> let zq  = pow z q
+                          nq  = pow n $ divide q 2
+                          nnq = n * nq
+                      in loop s zq (nq * nnq) nnq
+  _                -> error ()
+  where
+    power :: Zp p -> Zp p
+    power = next $ deg n
+      where
+       next :: Integer -> Zp p -> Zp p
+       next 1 m = m
+       next i m = next (i - 1) (m * m)
+    loop :: Integer -> Zp p -> Zp p -> Zp p -> Maybe (Zp p)
+    loop _ _ (Zp 0) _ = Just zero
+    loop _ _ (Zp 1) r = Just r
+    loop m c t r = let i  = least t 0
+                       b  = pow c $ 2^(m - i - 1)
+                       b2 = b * b
+                   in loop i b2 (t * b2) (r * b)
+      where
+        least :: Zp p -> Integer -> Integer
+        least (Zp 1)  j = j
+        least ti j = least (ti * ti) (j + 1)
