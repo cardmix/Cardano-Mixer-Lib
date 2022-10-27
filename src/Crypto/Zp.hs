@@ -15,6 +15,7 @@ module Crypto.Zp (Zp(..), FiniteField(..), toZp, fromZp, generateZp) where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
+import           PlutusTx
 import           PlutusTx.Prelude
 import           Prelude                           (Show, IO)
 import qualified Prelude
@@ -101,3 +102,15 @@ instance forall p. FiniteField p => Prelude.Eq (Zp p) where
 instance ToIntegerData (Zp p) where
     {-# INLINABLE toIntegerData #-}
     toIntegerData (Zp a) = [a]
+
+instance forall p. FiniteField p => FromData (Zp p) where
+    {-# INLINABLE fromBuiltinData #-}
+    fromBuiltinData = fmap toZp . fromBuiltinData
+
+instance forall p. FiniteField p => UnsafeFromData (Zp p) where
+    {-# INLINABLE unsafeFromBuiltinData #-}
+    unsafeFromBuiltinData = toZp . unsafeFromBuiltinData
+
+instance ToData (Zp p) where
+    {-# INLINABLE toBuiltinData #-}
+    toBuiltinData (Zp a) = toBuiltinData a

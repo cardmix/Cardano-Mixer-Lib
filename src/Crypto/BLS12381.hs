@@ -10,6 +10,7 @@
 {-# LANGUAGE OverloadedLists            #-}
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE ScopedTypeVariables        #-}
+{-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
 
 
@@ -17,6 +18,7 @@ module Crypto.BLS12381 where
 
 import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
+import           PlutusTx                          (unstableMakeIsData)
 import           PlutusTx.Prelude
 import           Prelude                           (Show)
 
@@ -30,6 +32,8 @@ import           Crypto.Polynomial                 (toPoly)
 data Q = Q
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
+
+unstableMakeIsData ''Q
 
 instance Semigroup Q where
   {-# INLINABLE (<>) #-}
@@ -46,6 +50,8 @@ instance FiniteField Q where
 data R = R
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
+
+unstableMakeIsData ''R
 
 instance Semigroup R where
   {-# INLINABLE (<>) #-}
