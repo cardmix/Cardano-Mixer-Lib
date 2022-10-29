@@ -109,8 +109,9 @@ mulJ p n
 {-# INLINABLE addJ #-}
 addJ :: EllipticCurve t => (t, t, t) -> (t, t, t) -> (t, t, t)
 addJ (x1, y1, z1) (x2, y2, z2)
-          | z1 == zero = (one, one, zero)
-          | z2 == zero = (one, one, zero)
+          | z1 == zero = (x2, y2, z2)
+          | z2 == zero = (x1, y1, z1)
+          | x1 == x2   = (one, one, zero)
           | otherwise  = (x3, y3, z3)
   where
     two = one + one
@@ -133,9 +134,7 @@ addJ (x1, y1, z1) (x2, y2, z2)
 
 {-# INLINABLE dblJ #-}
 dblJ :: EllipticCurve t => (t, t, t) -> (t, t, t)
-dblJ (x1, y1, z1)
-        | z1 == zero = (one, one, zero)
-        | otherwise  = (x3, y3, z3)
+dblJ (x1, y1, z1) = (x3, y3, z3)
   where
     two = one + one
     three = two + one
