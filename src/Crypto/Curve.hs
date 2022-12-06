@@ -17,7 +17,7 @@ import           Data.Aeson                        (FromJSON, ToJSON)
 import           GHC.Generics                      (Generic)
 import           PlutusTx.Prelude
 import           Prelude                           (Show)
-import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), genericArbitrary)
+import           Test.QuickCheck.Arbitrary.Generic (Arbitrary(..), Arg, genericArbitrary)
 
 import           Crypto.Zp                         (Zp, fromZp, FiniteField)
 import           Utils.Common                      (ToIntegerData (..))
@@ -32,7 +32,7 @@ data CurvePoint t = CP t t | O
   deriving stock (Show, Generic)
   deriving anyclass (FromJSON, ToJSON)
 
-instance Arbitrary t => Arbitrary (CurvePoint t) where
+instance (Arg (CurvePoint t) t, Arbitrary t) => Arbitrary (CurvePoint t) where
   {-# INLINABLE arbitrary #-}
   arbitrary = genericArbitrary
 
